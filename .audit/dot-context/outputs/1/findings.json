@@ -1,0 +1,179 @@
+{
+  "workflow": "dot-context",
+  "output_root": ".audit/dot-context/outputs/1",
+  "scope": {
+    "target_code": [
+      "src/**/*.sol",
+      "!src/test/**"
+    ],
+    "supporting_context_only": [
+      "src/test/**/*.sol",
+      "script/**/*.sol",
+      "foundry.toml",
+      "Makefile",
+      "README.md",
+      "lib/**"
+    ],
+    "excluded": [
+      ".audit/**",
+      ".context/**",
+      ".scratchpad/**",
+      "x-ray/**",
+      "broadcast/**",
+      "cache directories",
+      "prior findings and generated reports"
+    ]
+  },
+  "preflight": {
+    "blockchain": "Ethereum/EVM",
+    "language": "Solidity",
+    "vyper_required": false,
+    "foundry": "forge Version 1.5.1-stable",
+    "baseline": "env ETH_RPC_URL=https://ethereum.publicnode.com forge test -vv --fork-url https://ethereum.publicnode.com -> 46 passed, 0 failed, 0 skipped",
+    "static_tools": {
+      "slither": "0.11.5, completed with triaged informational/low-risk results",
+      "semgrep": "not found"
+    }
+  },
+  "findings": [
+    {
+      "id": "M-01",
+      "title": "Existing depositors' accrued yield can be diluted by pre-report deposits because factory deployments disable profit locking",
+      "severity": "Medium",
+      "status": "VALID",
+      "confidence": "High",
+      "probability": "Medium",
+      "locations": [
+        "src/Strategy4626Factory.sol:62-64",
+        "src/BaseLSTAccumulator.sol:146-155",
+        "src/Strategy4626.sol:69-75"
+      ],
+      "summary": "Strategy4626Factory sets profitMaxUnlockTime to zero. A depositor can enter before a report recognizes accrued stETH/wstETH/ERC4626 profit and immediately receive a pro-rata share of yield earned before they deposited.",
+      "impact": "Yield dilution for existing depositors; attacker captures prior unreported profit rather than principal.",
+      "verification": [
+        ".audit/dot-context/outputs/1/FactoryProfitUnlockDilutionPoC.t.sol",
+        "env ETH_RPC_URL=https://ethereum.publicnode.com forge test -vv --fork-url https://ethereum.publicnode.com --match-path src/test/FactoryProfitUnlockDilutionPoC.t.sol -> 1 passed"
+      ],
+      "recommendation": "Do not set profitMaxUnlockTime to zero by default. Preserve a non-zero unlock period or close/report/reopen deposits around material unreported profit."
+    },
+    {
+      "id": "M-02",
+      "title": "Manual LST-to-WETH swaps expose discounted liquidity before accounting records the loss",
+      "severity": "Medium",
+      "status": "VALID",
+      "confidence": "High",
+      "probability": "Medium",
+      "locations": [
+        "src/BaseLSTAccumulator.sol:133-155",
+        "src/BaseLSTAccumulator.sol:177-179",
+        "src/BaseLSTAccumulator.sol:241-246",
+        "src/Strategy.sol:74-81"
+      ],
+      "summary": "manualSwapToAsset can realize a Curve/stETH loss and expose WETH immediately via availableWithdrawLimit while TokenizedStrategy.totalAssets remains stale until report.",
+      "impact": "First redeemers can avoid realized losses, shifting more than their pro-rata loss to remaining holders.",
+      "verification": [
+        ".audit/dot-context/outputs/1/ManualSwapStaleAccountingPoC.t.sol",
+        "env ETH_RPC_URL=https://ethereum.publicnode.com forge test -vv --fork-url https://ethereum.publicnode.com --match-path src/test/ManualSwapStaleAccountingPoC.t.sol -> 1 passed"
+      ],
+      "recommendation": "Atomically account realized losses before withdrawals, or gate availableWithdrawLimit after manual/emergency swaps until a report records the new value."
+    },
+    {
+      "id": "M-03",
+      "title": "Post-shutdown reports can re-stake emergency-withdrawn WETH and block withdrawals again",
+      "severity": "Medium",
+      "status": "VALID",
+      "confidence": "High",
+      "probability": "Medium",
+      "locations": [
+        "src/BaseLSTAccumulator.sol:146-155",
+        "src/BaseLSTAccumulator.sol:158-163",
+        "src/Strategy.sol:51-70"
+      ],
+      "summary": "_harvestAndReport stakes idle WETH without checking TokenizedStrategy.isShutdown. Because reports remain callable after shutdown, a report can redeploy WETH freed by emergencyWithdraw.",
+      "impact": "Emergency recovery can be undone by a keeper report, returning maxRedeem to zero and delaying user withdrawals.",
+      "verification": [
+        ".audit/dot-context/outputs/1/ShutdownReportRedeployPoC.t.sol",
+        "env ETH_RPC_URL=https://ethereum.publicnode.com forge test -vv --fork-url https://ethereum.publicnode.com --match-path src/test/ShutdownReportRedeployPoC.t.sol -> 1 passed"
+      ],
+      "recommendation": "In _harvestAndReport, avoid staking idle WETH when TokenizedStrategy.isShutdown is true; add shutdown-specific regression coverage."
+    },
+    {
+      "id": "M-04",
+      "title": "Strategy4626 emergencyWithdraw does not materially free the normal ERC4626-held position",
+      "severity": "Medium",
+      "status": "VALID",
+      "confidence": "High",
+      "probability": "Medium",
+      "locations": [
+        "src/BaseLSTAccumulator.sol:158-163",
+        "src/Strategy4626.sol:29-42",
+        "src/Strategy4626.sol:69-75",
+        "src/Strategy4626.sol:77-95",
+        "src/Strategy4626.sol:103-115"
+      ],
+      "summary": "The inherited emergency withdraw path checks only loose stETH. Normal Strategy4626 exposure is held as wstETH ERC4626 vault shares, so emergencyWithdraw frees only dust and leaves the position illiquid.",
+      "impact": "The standard Yearn emergency path fails during time-sensitive recovery unless operators know to run the manual redeem/unwrap sequence.",
+      "verification": [
+        ".audit/dot-context/outputs/1/Strategy4626EmergencyNoopPoC.t.sol",
+        "env ETH_RPC_URL=https://ethereum.publicnode.com forge test -vv --fork-url https://ethereum.publicnode.com --match-path src/test/Strategy4626EmergencyNoopPoC.t.sol -> 1 passed"
+      ],
+      "recommendation": "Override Strategy4626._emergencyWithdraw to redeem vault shares, unwrap wstETH, and swap stETH to WETH using an ERC4626-aware amount cap."
+    },
+    {
+      "id": "L-01",
+      "title": "Lido withdrawal initiation returns an encoded array but keeper claim decodes a scalar request id",
+      "severity": "Low",
+      "status": "VALID",
+      "confidence": "High",
+      "probability": "Medium",
+      "locations": [
+        "src/Strategy.sol:91-112",
+        "src/BaseLSTAccumulator.sol:259-272"
+      ],
+      "summary": "_initiateLSTWithdrawal returns abi.encode(uint256[] requestIds), while _claimLSTWithdrawal expects abi.decode(bytes,(uint256)).",
+      "impact": "Keeper automation using the returned bytes directly can fail to clear pendingRedemptions, delaying reports until manual correction.",
+      "verification": [
+        "Code-level ABI validation; existing tests decode the returned array and re-encode requestIds[0] before claim."
+      ],
+      "recommendation": "Return abi.encode(requestIds[0]) for the single-request flow or update claim logic to decode and handle uint256[]."
+    },
+    {
+      "id": "L-02",
+      "title": "StrategyAprOracle returns a fixed APR for every strategy and debt delta",
+      "severity": "Low",
+      "status": "VALID",
+      "confidence": "High",
+      "probability": "Medium",
+      "locations": [
+        "src/periphery/StrategyAprOracle.sol:28-32"
+      ],
+      "summary": "aprAfterDebtChange ignores _strategy and _delta and always returns 4e16.",
+      "impact": "If used in production allocation, it can misprice impaired, capped, shutdown, or negative-yield strategies.",
+      "verification": [
+        "Code-level validation; function body is a constant return."
+      ],
+      "recommendation": "Do not deploy this as a production allocator oracle; compute bounded APR from real stETH/wstETH/vault state and return zero for unavailable strategies."
+    }
+  ],
+  "dismissed_candidates": [
+    "TokenizedStrategy first-depositor inflation via raw donations",
+    "Permissionless Curve slippage on ETH-to-stETH deposits",
+    "Untrusted external reentrancy through user-facing Yearn paths",
+    "Slither strict equality style warnings",
+    "Slither factory reentrancy warning without demonstrated fund loss",
+    "Management-only reportBuffer misconfiguration"
+  ],
+  "artifacts": [
+    ".audit/dot-context/outputs/1/audit-context.md",
+    ".audit/dot-context/outputs/1/audit-debug.md",
+    ".audit/dot-context/outputs/1/audit-report.md",
+    ".audit/dot-context/outputs/1/findings.json",
+    ".audit/dot-context/outputs/1/expert1-analysis.md",
+    ".audit/dot-context/outputs/1/expert2-analysis.md",
+    ".audit/dot-context/outputs/1/triager-analysis.md",
+    ".audit/dot-context/outputs/1/FactoryProfitUnlockDilutionPoC.t.sol",
+    ".audit/dot-context/outputs/1/ManualSwapStaleAccountingPoC.t.sol",
+    ".audit/dot-context/outputs/1/ShutdownReportRedeployPoC.t.sol",
+    ".audit/dot-context/outputs/1/Strategy4626EmergencyNoopPoC.t.sol"
+  ]
+}

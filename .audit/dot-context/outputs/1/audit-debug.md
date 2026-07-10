@@ -1,0 +1,42 @@
+- Detected requested workflow: dot-context smart-contract-audit from /Users/dudesahn/Documents/GitHub/codex/skill-research/dot-context, explicitly not Plamen.
+- Output root selected: .audit/dot-context/outputs/1 because no prior numbered dot-context output directory existed.
+- Compatibility decision: no .context shim created because the dot-context instructions only require an output-root convention and the user supplied an alternate root.
+- Scope boundaries: target code is src/**/*.sol excluding src/test/**; tests, config, scripts, README, and dependencies may be read only as supporting context or verification harnesses.
+- Ignored target classes: prior audit outputs, scratchpads, generated reports, PoCs, notes, .audit contents, .context contents, external artifacts, cache directories, and previous findings.
+- Detected blockchain: Ethereum/EVM.
+- Detected language: Solidity only in in-scope contracts; no Vyper files or Vyper requirement detected during preflight.
+- Detected protocol type: Yearn V3-style yield strategy and LST accumulator with stETH, wstETH, Curve ETH/stETH pool, Lido withdrawal queue, and optional ERC4626 vault integration.
+- Read dot-context file: skills/smart-contract-audit/SKILL.md.
+- Read dot-context file: skills/smart-contract-audit/multi-expert.md.
+- Read dot-context file: skills/smart-contract-audit/triager.md.
+- Read dot-context file: skills/smart-contract-audit/solidity-checks.md.
+- Read dot-context file: skills/smart-contract-audit/finding-format.md.
+- Read dot-context file: skills/smart-contract-audit/report-template.md.
+- Read dot-context file: skills/foundry-poc/SKILL.md for PoC requirements if Medium+ findings are verified.
+- Read dot-context protocol context: reference/solidity/protocols/yield.md for yield strategy and ERC4626 checklist.
+- `forge --version` -> Foundry available, forge Version 1.5.1-stable.
+- `find src -path src/test -prune -o -name '*.sol' -print` -> In-scope production Solidity files enumerated under src/.
+- `find src -name '*.vy' -o -name '*.v.py' -o -name '*.vyper'` -> No Vyper files found; Vyper not required.
+- `forge build` -> Passed; compiler run successful with lint/style notes and a sandbox warning about global signature cache write permission.
+- `forge test -vv --fork-url ${ETH_RPC_URL}` in sandbox -> Foundry crashed before tests in macOS system proxy initialization; treated as environment issue.
+- `env ETH_RPC_URL=https://ethereum.publicnode.com forge test -vv --fork-url https://ethereum.publicnode.com` with approved network -> Baseline passed 46 tests, 0 failed, 0 skipped.
+- Spawned Expert 1 dot-context analysis -> wrote .audit/dot-context/outputs/1/expert1-analysis.md.
+- Spawned Expert 2 dot-context analysis -> wrote .audit/dot-context/outputs/1/expert2-analysis.md.
+- `slither . --filter-paths 'lib|src/test|script|broadcast|.audit|.context|x-ray'` -> Completed with 23 results; triaged as mostly strict-equality/style, factory reentrancy warning, zero-address hygiene, and benign/manual reentrancy notes.
+- `which semgrep && semgrep --version` -> semgrep not found; semgrep unavailable.
+- Created durable PoC .audit/dot-context/outputs/1/ShutdownReportRedeployPoC.t.sol and temporarily mirrored it into src/test for Foundry discovery.
+- `env ETH_RPC_URL=https://ethereum.publicnode.com forge test -vv --fork-url https://ethereum.publicnode.com --match-path src/test/ShutdownReportRedeployPoC.t.sol` -> Passed 1 test; proved post-shutdown report can restake freed WETH and block withdrawals again.
+- Removed temporary mirror src/test/ShutdownReportRedeployPoC.t.sol after successful PoC run.
+- Created durable PoC .audit/dot-context/outputs/1/FactoryProfitUnlockDilutionPoC.t.sol and temporarily mirrored it into src/test for Foundry discovery.
+- `env ETH_RPC_URL=https://ethereum.publicnode.com forge test -vv --fork-url https://ethereum.publicnode.com --match-path src/test/FactoryProfitUnlockDilutionPoC.t.sol` -> Passed 1 test; proved factory zero profit unlock lets pre-report depositor capture prior ERC4626 vault profit.
+- Removed temporary mirror src/test/FactoryProfitUnlockDilutionPoC.t.sol after successful PoC run.
+- Created durable PoC .audit/dot-context/outputs/1/Strategy4626EmergencyNoopPoC.t.sol and temporarily mirrored it into src/test for Foundry discovery.
+- First Strategy4626 emergency PoC run failed due to dust assumptions; adjusted assertions to allow <=2 wei dust and prove no material unwind.
+- `env ETH_RPC_URL=https://ethereum.publicnode.com forge test -vv --fork-url https://ethereum.publicnode.com --match-path src/test/Strategy4626EmergencyNoopPoC.t.sol` -> Passed 1 test; proved Strategy4626 emergencyWithdraw leaves vault shares unchanged and frees only dust.
+- Removed temporary mirror src/test/Strategy4626EmergencyNoopPoC.t.sol after successful PoC run.
+- Created durable PoC .audit/dot-context/outputs/1/ManualSwapStaleAccountingPoC.t.sol and temporarily mirrored it into src/test for Foundry discovery.
+- First manual swap stale-accounting PoC run failed due to exact discount tolerance; adjusted setup assertion to require a material 89-100 percent band.
+- `env ETH_RPC_URL=https://ethereum.publicnode.com forge test -vv --fork-url https://ethereum.publicnode.com --match-path src/test/ManualSwapStaleAccountingPoC.t.sol` -> Passed 1 test; proved first redeemer can avoid manual swap loss before report.
+- Removed temporary mirror src/test/ManualSwapStaleAccountingPoC.t.sol after successful PoC run.
+- `find src/test -maxdepth 1 -name '*PoC*.t.sol' -print` -> No temporary PoC mirrors remain in the test tree.
+- Final `env ETH_RPC_URL=https://ethereum.publicnode.com forge test -vv --fork-url https://ethereum.publicnode.com` -> Passed 46 tests, 0 failed, 0 skipped after all temporary mirrors were removed.

@@ -1,0 +1,701 @@
+{
+  "meta": {
+    "repo": "/Users/dudesahn/Documents/GitHub/codex/review/steth-accumulator-strategy",
+    "src_dir": "src",
+    "generated_at": "2026-07-08T16:22:49.437489+00:00",
+    "git_head": "521fff2",
+    "git_branch": "review",
+    "total_commits": 81,
+    "total_source_files": 13,
+    "analysis_time_ms": 1149
+  },
+  "repo_shape": {
+    "classification": "normal_dev",
+    "total_commits": 81,
+    "source_touching_commits": 23,
+    "bulk_import_sha": null,
+    "date_spread_days": 1162,
+    "first_commit_date": "2023-04-24",
+    "last_commit_date": "2026-06-29",
+    "signals": [
+      "Date spread: 1162 days",
+      "23 commits touch source files out of 81 total"
+    ]
+  },
+  "fix_candidates": [
+    {
+      "sha": "cb080ca",
+      "full_sha": "cb080cab6afe57164332f9b6b05380bc46ffdf66",
+      "date": "2026-03-20",
+      "author": "Schlagonia",
+      "subject": "fix: updates",
+      "score": 14,
+      "reasons": [
+        "bug fix",
+        "adds runtime guards (+2/-0)",
+        "changes token transfer logic",
+        "changes accounting/balance logic",
+        "spans 3 security domains (fund_flows, oracle_price, state_machines)",
+        "includes test changes"
+      ],
+      "source_files_touched": [
+        "src/BaseLSTAccumulator.sol",
+        "src/Strategy.sol",
+        "src/interfaces/IBaseLSTAccumulator.sol",
+        "src/interfaces/IQueue.sol"
+      ],
+      "test_changed": true,
+      "lines_changed": 118
+    },
+    {
+      "sha": "457aaa8",
+      "full_sha": "457aaa83ebc55b303882b8c76b02be3fe6ac7082",
+      "date": "2026-04-21",
+      "author": "Schlagonia",
+      "subject": "fix: withdraws",
+      "score": 11,
+      "reasons": [
+        "bug fix",
+        "changes signature/auth handling",
+        "changes accounting/balance logic",
+        "touches fund_flows code",
+        "focused change (1 source files)",
+        "includes test changes"
+      ],
+      "source_files_touched": [
+        "src/Strategy4626.sol"
+      ],
+      "test_changed": true,
+      "lines_changed": 16
+    },
+    {
+      "sha": "a7fdbbd",
+      "full_sha": "a7fdbbd666c17be00571a3c5705e9eca5ad416c9",
+      "date": "2025-09-10",
+      "author": "Schlagonia",
+      "subject": "fix: reviews",
+      "score": 11,
+      "reasons": [
+        "bug fix",
+        "changes accounting/balance logic",
+        "spans 3 security domains (fund_flows, oracle_price, state_machines)",
+        "focused change (2 source files)",
+        "includes test changes"
+      ],
+      "source_files_touched": [
+        "src/BaseLSTAccumulator.sol",
+        "src/Strategy.sol"
+      ],
+      "test_changed": true,
+      "lines_changed": 43
+    },
+    {
+      "sha": "403c35e",
+      "full_sha": "403c35edeb144fafffa1abdcee90b521a3c27ccc",
+      "date": "2023-07-06",
+      "author": "Schlagonia",
+      "subject": "fix: lint",
+      "score": 11,
+      "reasons": [
+        "bug fix",
+        "spans 2 security domains (fund_flows, state_machines)",
+        "focused change (2 source files)",
+        "net code removal",
+        "includes test changes"
+      ],
+      "source_files_touched": [
+        "src/Strategy.sol",
+        "src/periphery/StrategyAprOracle.sol"
+      ],
+      "test_changed": true,
+      "lines_changed": 17
+    },
+    {
+      "sha": "8a686fa",
+      "full_sha": "8a686fa07c14bdd1cc46d3e67efffa3d5f555333",
+      "date": "2024-03-22",
+      "author": "Schlag",
+      "subject": "fix: move up available withdraw limit (#28)",
+      "score": 10,
+      "reasons": [
+        "bug fix",
+        "changes accounting/balance logic",
+        "spans 2 security domains (fund_flows, state_machines)",
+        "focused change (1 source files)"
+      ],
+      "source_files_touched": [
+        "src/Strategy.sol"
+      ],
+      "test_changed": false,
+      "lines_changed": 97
+    },
+    {
+      "sha": "ef83fbf",
+      "full_sha": "ef83fbf34ab9edbbe6e15415f7bc6a6da5322e58",
+      "date": "2023-07-06",
+      "author": "Schlagonia",
+      "subject": "fix: new version updates",
+      "score": 10,
+      "reasons": [
+        "bug fix",
+        "spans 2 security domains (fund_flows, state_machines)",
+        "focused change (2 source files)",
+        "includes test changes"
+      ],
+      "source_files_touched": [
+        "src/Strategy.sol",
+        "src/periphery/StrategyAprOracle.sol"
+      ],
+      "test_changed": true,
+      "lines_changed": 17
+    },
+    {
+      "sha": "8dc8c81",
+      "full_sha": "8dc8c8119e54e02636d04aacb78137c1d665df6f",
+      "date": "2026-04-11",
+      "author": "Schlagonia",
+      "subject": "build: 4626",
+      "score": 9,
+      "reasons": [
+        "maintenance/cosmetic",
+        "adds runtime guards (+2/-0)",
+        "changes signature/auth handling",
+        "changes accounting/balance logic",
+        "spans 2 security domains (fund_flows, state_machines)",
+        "focused change (3 source files)",
+        "includes test changes"
+      ],
+      "source_files_touched": [
+        "src/Strategy.sol",
+        "src/Strategy4626.sol",
+        "src/interfaces/IWstETH.sol"
+      ],
+      "test_changed": true,
+      "lines_changed": 144
+    },
+    {
+      "sha": "3df2348",
+      "full_sha": "3df23485057dffeaaa7ad51aeee1f4cafd059523",
+      "date": "2023-10-25",
+      "author": "Schlag",
+      "subject": "fix: license (#20)",
+      "score": 9,
+      "reasons": [
+        "bug fix",
+        "spans 2 security domains (fund_flows, state_machines)",
+        "focused change (3 source files)"
+      ],
+      "source_files_touched": [
+        "src/Strategy.sol",
+        "src/interfaces/IStrategyInterface.sol",
+        "src/periphery/StrategyAprOracle.sol"
+      ],
+      "test_changed": false,
+      "lines_changed": 6
+    },
+    {
+      "sha": "e7f60e1",
+      "full_sha": "e7f60e1a405817e1f8dd778720bc3682af6b1163",
+      "date": "2023-10-22",
+      "author": "Schlag",
+      "subject": "fix: trigger underscore (#19)",
+      "score": 9,
+      "reasons": [
+        "bug fix",
+        "spans 2 security domains (fund_flows, state_machines)",
+        "focused change (1 source files)"
+      ],
+      "source_files_touched": [
+        "src/Strategy.sol"
+      ],
+      "test_changed": false,
+      "lines_changed": 2
+    },
+    {
+      "sha": "f34fea4",
+      "full_sha": "f34fea42ef7786945681e598a327a6f5e6fda148",
+      "date": "2023-10-12",
+      "author": "Schlag",
+      "subject": "feat: update to 3.0.1 (#17)",
+      "score": 9,
+      "reasons": [
+        "feature addition",
+        "removes runtime guards (+0/-1)",
+        "changes accounting/balance logic",
+        "spans 2 security domains (fund_flows, state_machines)",
+        "focused change (2 source files)",
+        "includes test changes"
+      ],
+      "source_files_touched": [
+        "src/Strategy.sol",
+        "src/periphery/StrategyAprOracle.sol"
+      ],
+      "test_changed": true,
+      "lines_changed": 68
+    }
+  ],
+  "dangerous_area_changes": {
+    "access_control": {
+      "commit_count": 1,
+      "files": [
+        "src/Strategy4626Factory.sol"
+      ],
+      "commits": [
+        {
+          "sha": "521fff2",
+          "date": "2026-06-29",
+          "subject": "build: factory"
+        }
+      ]
+    },
+    "fund_flows": {
+      "commit_count": 18,
+      "files": [
+        "src/BaseLSTAccumulator.sol",
+        "src/Strategy.sol",
+        "src/Strategy4626.sol",
+        "src/interfaces/IBaseLSTAccumulator.sol",
+        "src/interfaces/IStrategy4626Interface.sol",
+        "src/interfaces/IWETH.sol"
+      ],
+      "commits": [
+        {
+          "sha": "68f946a",
+          "date": "2026-06-29",
+          "subject": "chore: updates"
+        },
+        {
+          "sha": "457aaa8",
+          "date": "2026-04-21",
+          "subject": "fix: withdraws"
+        },
+        {
+          "sha": "8dc8c81",
+          "date": "2026-04-11",
+          "subject": "build: 4626"
+        },
+        {
+          "sha": "cb080ca",
+          "date": "2026-03-20",
+          "subject": "fix: updates"
+        },
+        {
+          "sha": "a7fdbbd",
+          "date": "2025-09-10",
+          "subject": "fix: reviews"
+        },
+        {
+          "sha": "51fe06b",
+          "date": "2025-09-04",
+          "subject": "feat: clear redemtions"
+        },
+        {
+          "sha": "fab9dad",
+          "date": "2025-09-04",
+          "subject": "feat: implement stETH accumulator strategy"
+        },
+        {
+          "sha": "d185c78",
+          "date": "2024-07-25",
+          "subject": "chore: updates to periphery (#35)"
+        },
+        {
+          "sha": "8a686fa",
+          "date": "2024-03-22",
+          "subject": "fix: move up available withdraw limit (#28)"
+        },
+        {
+          "sha": "c6108e4",
+          "date": "2024-03-05",
+          "subject": "feat: 302 (#27)"
+        },
+        {
+          "sha": "3df2348",
+          "date": "2023-10-25",
+          "subject": "fix: license (#20)"
+        },
+        {
+          "sha": "e7f60e1",
+          "date": "2023-10-22",
+          "subject": "fix: trigger underscore (#19)"
+        },
+        {
+          "sha": "f34fea4",
+          "date": "2023-10-12",
+          "subject": "feat: update to 3.0.1 (#17)"
+        },
+        {
+          "sha": "403c35e",
+          "date": "2023-07-06",
+          "subject": "fix: lint"
+        },
+        {
+          "sha": "ef83fbf",
+          "date": "2023-07-06",
+          "subject": "fix: new version updates"
+        }
+      ],
+      "truncated": true
+    },
+    "oracle_price": {
+      "commit_count": 5,
+      "files": [
+        "src/BaseLSTAccumulator.sol",
+        "src/interfaces/IBaseLSTAccumulator.sol",
+        "src/interfaces/ICurve.sol"
+      ],
+      "commits": [
+        {
+          "sha": "68f946a",
+          "date": "2026-06-29",
+          "subject": "chore: updates"
+        },
+        {
+          "sha": "cb080ca",
+          "date": "2026-03-20",
+          "subject": "fix: updates"
+        },
+        {
+          "sha": "a7fdbbd",
+          "date": "2025-09-10",
+          "subject": "fix: reviews"
+        },
+        {
+          "sha": "51fe06b",
+          "date": "2025-09-04",
+          "subject": "feat: clear redemtions"
+        },
+        {
+          "sha": "fab9dad",
+          "date": "2025-09-04",
+          "subject": "feat: implement stETH accumulator strategy"
+        }
+      ]
+    },
+    "state_machines": {
+      "commit_count": 17,
+      "files": [
+        "src/Strategy.sol",
+        "src/interfaces/ISTETH.sol"
+      ],
+      "commits": [
+        {
+          "sha": "68f946a",
+          "date": "2026-06-29",
+          "subject": "chore: updates"
+        },
+        {
+          "sha": "8dc8c81",
+          "date": "2026-04-11",
+          "subject": "build: 4626"
+        },
+        {
+          "sha": "cb080ca",
+          "date": "2026-03-20",
+          "subject": "fix: updates"
+        },
+        {
+          "sha": "a7fdbbd",
+          "date": "2025-09-10",
+          "subject": "fix: reviews"
+        },
+        {
+          "sha": "51fe06b",
+          "date": "2025-09-04",
+          "subject": "feat: clear redemtions"
+        },
+        {
+          "sha": "fab9dad",
+          "date": "2025-09-04",
+          "subject": "feat: implement stETH accumulator strategy"
+        },
+        {
+          "sha": "d185c78",
+          "date": "2024-07-25",
+          "subject": "chore: updates to periphery (#35)"
+        },
+        {
+          "sha": "8a686fa",
+          "date": "2024-03-22",
+          "subject": "fix: move up available withdraw limit (#28)"
+        },
+        {
+          "sha": "c6108e4",
+          "date": "2024-03-05",
+          "subject": "feat: 302 (#27)"
+        },
+        {
+          "sha": "3df2348",
+          "date": "2023-10-25",
+          "subject": "fix: license (#20)"
+        },
+        {
+          "sha": "e7f60e1",
+          "date": "2023-10-22",
+          "subject": "fix: trigger underscore (#19)"
+        },
+        {
+          "sha": "f34fea4",
+          "date": "2023-10-12",
+          "subject": "feat: update to 3.0.1 (#17)"
+        },
+        {
+          "sha": "403c35e",
+          "date": "2023-07-06",
+          "subject": "fix: lint"
+        },
+        {
+          "sha": "ef83fbf",
+          "date": "2023-07-06",
+          "subject": "fix: new version updates"
+        },
+        {
+          "sha": "c7e0e01",
+          "date": "2023-06-06",
+          "subject": "fix: is overriden"
+        }
+      ],
+      "truncated": true
+    }
+  },
+  "late_changes": {
+    "window_days": 30,
+    "cutoff_date": "2026-05-30",
+    "latest_commit_date": "2026-06-29",
+    "late_commits": [
+      {
+        "sha": "521fff2",
+        "date": "2026-06-29",
+        "author": "Schlagonia",
+        "subject": "build: factory",
+        "source_files": [
+          "src/Strategy4626Factory.sol"
+        ],
+        "test_changed": true,
+        "lines_changed": 89
+      },
+      {
+        "sha": "68f946a",
+        "date": "2026-06-29",
+        "author": "Schlagonia",
+        "subject": "chore: updates",
+        "source_files": [
+          "src/BaseLSTAccumulator.sol",
+          "src/Strategy.sol",
+          "src/Strategy4626.sol",
+          "src/interfaces/IBaseLSTAccumulator.sol",
+          "src/interfaces/ICurve.sol",
+          "src/interfaces/IQueue.sol",
+          "src/interfaces/IStrategy4626Interface.sol",
+          "src/interfaces/IStrategyInterface.sol",
+          "src/interfaces/IWstETH.sol",
+          "src/periphery/StrategyAprOracle.sol"
+        ],
+        "test_changed": true,
+        "lines_changed": 276
+      }
+    ],
+    "source_without_test_count": 0,
+    "total_late_source_commits": 2
+  },
+  "forked_deps": {
+    "detected_libs": [
+      {
+        "name": "openzeppelin-contracts",
+        "path": "lib/openzeppelin-contracts",
+        "known_upstream": "OpenZeppelin",
+        "is_submodule": true,
+        "is_internalized": false,
+        "sol_file_count": 323,
+        "pragma_versions": [
+          ">0.5.0 <0.9.0",
+          ">=0.4.21 <0.9.0",
+          ">=0.4.22 <0.9.0",
+          ">=0.5.0",
+          ">=0.6.0 <0.9.0",
+          ">=0.6.2",
+          ">=0.6.2 <0.9.0",
+          ">=0.6.9 <0.9.0",
+          ">=0.7.0 <0.9.0",
+          ">=0.8.0 <0.9.0",
+          "^0.8.0",
+          "^0.8.1",
+          "^0.8.19",
+          "^0.8.2",
+          "^0.8.4",
+          "^0.8.8",
+          "^0.8.9"
+        ],
+        "notes": [
+          "Pragma '>0.5.0 <0.9.0' differs from expected upstream versions",
+          "Pragma '>=0.4.21 <0.9.0' differs from expected upstream versions",
+          "Pragma '>=0.4.22 <0.9.0' differs from expected upstream versions",
+          "Pragma '>=0.5.0' differs from expected upstream versions",
+          "Pragma '>=0.6.0 <0.9.0' differs from expected upstream versions",
+          "Pragma '>=0.6.2' differs from expected upstream versions",
+          "Pragma '>=0.6.2 <0.9.0' differs from expected upstream versions",
+          "Pragma '>=0.6.9 <0.9.0' differs from expected upstream versions",
+          "Pragma '>=0.7.0 <0.9.0' differs from expected upstream versions"
+        ]
+      },
+      {
+        "name": "tokenized-strategy",
+        "path": "lib/tokenized-strategy",
+        "known_upstream": null,
+        "is_submodule": true,
+        "is_internalized": false,
+        "sol_file_count": 394,
+        "pragma_versions": [
+          ">0.5.0 <0.9.0",
+          ">=0.4.21 <0.9.0",
+          ">=0.4.22 <0.9.0",
+          ">=0.5.0",
+          ">=0.6.0 <0.9.0",
+          ">=0.6.2",
+          ">=0.6.2 <0.9.0",
+          ">=0.6.9 <0.9.0",
+          ">=0.7.0 <0.9.0",
+          ">=0.8.0 <0.9.0",
+          ">=0.8.18",
+          ">=0.8.18 ^0.8.0",
+          ">=0.8.18 ^0.8.0 ^0.8.1",
+          "^0.8.0",
+          "^0.8.1",
+          "^0.8.19",
+          "^0.8.2",
+          "^0.8.4",
+          "^0.8.8",
+          "^0.8.9"
+        ],
+        "notes": []
+      },
+      {
+        "name": "tokenized-strategy-periphery",
+        "path": "lib/tokenized-strategy-periphery",
+        "known_upstream": null,
+        "is_submodule": true,
+        "is_internalized": false,
+        "sol_file_count": 1604,
+        "pragma_versions": [
+          ">0.5.0 <0.9.0",
+          ">=0.4.21 <0.9.0",
+          ">=0.4.22 <0.9.0",
+          ">=0.5.0",
+          ">=0.6.0 <0.9.0",
+          ">=0.6.12",
+          ">=0.6.2",
+          ">=0.6.2 <0.9.0",
+          ">=0.6.9 <0.9.0",
+          ">=0.7.0 <0.9.0",
+          ">=0.8.0 <0.9.0",
+          ">=0.8.13",
+          ">=0.8.18",
+          ">=0.8.18 ^0.8.0",
+          ">=0.8.18 ^0.8.0 ^0.8.1",
+          "^0.8.0",
+          "^0.8.1",
+          "^0.8.18",
+          "^0.8.19",
+          "^0.8.2",
+          "^0.8.4",
+          "^0.8.8",
+          "^0.8.9"
+        ],
+        "notes": []
+      }
+    ],
+    "removed_submodules": [
+      {
+        "path": "lib/tokenized-strategy-periphery",
+        "removed_in_sha": "f8afbce",
+        "subject": "build: update to 303 (#40)"
+      },
+      {
+        "path": "lib/tokenized-strategy",
+        "removed_in_sha": "d185c78",
+        "subject": "chore: updates to periphery (#35)"
+      },
+      {
+        "path": "lib/tokenized-strategy-periphery",
+        "removed_in_sha": "8a686fa",
+        "subject": "fix: move up available withdraw limit (#28)"
+      },
+      {
+        "path": "lib/openzeppelin-contracts",
+        "removed_in_sha": "c6108e4",
+        "subject": "feat: 302 (#27)"
+      },
+      {
+        "path": "lib/tokenized-strategy-periphery",
+        "removed_in_sha": "98fc0eb",
+        "subject": "chore: updated periphery (#13)"
+      },
+      {
+        "path": "lib/tokenized-strategy",
+        "removed_in_sha": "e35bd55",
+        "subject": "chore: remove old module"
+      },
+      {
+        "path": "lib/forge-std",
+        "removed_in_sha": "d37a529",
+        "subject": "chore: remove all"
+      },
+      {
+        "path": "lib/openzeppelin-contracts",
+        "removed_in_sha": "d37a529",
+        "subject": "chore: remove all"
+      },
+      {
+        "path": "lib/tokenized-strategy-periphery",
+        "removed_in_sha": "22f9c32",
+        "subject": "chore: remove old periphery"
+      },
+      {
+        "path": "lib/tokenized-strategy",
+        "removed_in_sha": "fc4d7b2",
+        "subject": "chore: remove old version"
+      },
+      {
+        "path": "lib/tokenized-strategy-periphery",
+        "removed_in_sha": "bd6e3d9",
+        "subject": "chore: remove old periphery"
+      },
+      {
+        "path": "lib/tokenized-strategy",
+        "removed_in_sha": "2581ddf",
+        "subject": "chore: remove old version"
+      }
+    ]
+  },
+  "tech_debt": {
+    "total_count": 0,
+    "items": [],
+    "files_with_debt": 0,
+    "capped": false
+  },
+  "dev_patterns": {
+    "test_co_change_rate": 0.696,
+    "fix_without_test_rate": 0.3,
+    "avg_commit_size": 93.8,
+    "avg_commit_size_note": null,
+    "single_developer_pct": 0.874,
+    "top_contributor": "Schlagonia",
+    "contributor_breakdown": [
+      {
+        "author": "Schlagonia",
+        "lines_added": 1285,
+        "pct": 0.874
+      },
+      {
+        "author": "Schlag",
+        "lines_added": 180,
+        "pct": 0.122
+      },
+      {
+        "author": "poolpitako",
+        "lines_added": 5,
+        "pct": 0.003
+      }
+    ]
+  }
+}

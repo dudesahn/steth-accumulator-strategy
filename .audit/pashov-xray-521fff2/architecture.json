@@ -1,0 +1,33 @@
+{
+  "title": "stETH Accumulator Strategy Architecture",
+  "nodes": [
+    {"id": "user", "label": "Depositor", "subtitle": "ERC4626 user", "type": "actor", "row": 0},
+    {"id": "keeper", "label": "Keeper", "subtitle": "report / tend", "type": "actor", "row": 0},
+    {"id": "management", "label": "Management", "subtitle": "parameters", "type": "actor", "row": 0},
+    {"id": "factory", "label": "Strategy4626Factory", "subtitle": "deploys variants", "type": "protocol", "row": 1},
+    {"id": "strategy", "label": "Strategy / BaseLSTAccumulator", "subtitle": "WETH -> stETH", "type": "protocol", "row": 1},
+    {"id": "strategy4626", "label": "Strategy4626", "subtitle": "wstETH vault layer", "type": "protocol", "row": 1},
+    {"id": "oracle", "label": "StrategyAprOracle", "subtitle": "fixed APR", "type": "protocol", "row": 1},
+    {"id": "tokenized", "label": "TokenizedStrategy", "subtitle": "ERC4626 accounting", "type": "external", "row": 2},
+    {"id": "lido", "label": "Lido stETH", "subtitle": "submit / queue", "type": "external", "row": 2},
+    {"id": "curve", "label": "Curve stETH Pool", "subtitle": "swap route", "type": "external", "row": 2},
+    {"id": "wsteth_vault", "label": "wstETH + ERC4626 Vault", "subtitle": "wrapped position", "type": "external", "row": 2}
+  ],
+  "edges": [
+    {"from": "user", "to": "strategy", "label": "deposit withdraw"},
+    {"from": "keeper", "to": "strategy", "label": "report tend"},
+    {"from": "management", "to": "strategy", "label": "configure unwind"},
+    {"from": "management", "to": "factory", "label": "set roles"},
+    {"from": "factory", "to": "strategy4626", "label": "deploy clone"},
+    {"from": "strategy", "to": "tokenized", "label": "delegate accounting"},
+    {"from": "strategy", "to": "lido", "label": "stake claim"},
+    {"from": "strategy", "to": "curve", "label": "swap stETH"},
+    {"from": "strategy4626", "to": "wsteth_vault", "label": "wrap deposit"},
+    {"from": "oracle", "to": "tokenized", "label": "apr read"}
+  ],
+  "groups": [
+    {"label": "Actors", "nodes": ["user", "keeper", "management"]},
+    {"label": "In-scope contracts", "nodes": ["factory", "strategy", "strategy4626", "oracle"]},
+    {"label": "External dependencies", "nodes": ["tokenized", "lido", "curve", "wsteth_vault"]}
+  ]
+}

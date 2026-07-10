@@ -1,0 +1,115 @@
+=== Toolchain ===
+foundry
+=== Source (with line counts) ===
+     282 src/BaseLSTAccumulator.sol
+     131 src/Strategy.sol
+     116 src/Strategy4626.sol
+      89 src/Strategy4626Factory.sol
+      43 src/interfaces/IBaseLSTAccumulator.sol
+      13 src/interfaces/ICurve.sol
+      11 src/interfaces/IQueue.sol
+       9 src/interfaces/ISTETH.sol
+      15 src/interfaces/IStrategy4626Interface.sol
+      14 src/interfaces/IStrategyInterface.sol
+      12 src/interfaces/IWETH.sol
+      14 src/interfaces/IWstETH.sol
+      34 src/periphery/StrategyAprOracle.sol
+     783 total
+=== nSLOC ===
+src/BaseLSTAccumulator.sol: 0
+src/Strategy.sol: 0
+src/Strategy4626.sol: 0
+src/Strategy4626Factory.sol: 0
+src/interfaces/IBaseLSTAccumulator.sol: 0
+src/interfaces/ICurve.sol: 0
+src/interfaces/IQueue.sol: 0
+src/interfaces/ISTETH.sol: 0
+src/interfaces/IStrategy4626Interface.sol: 0
+src/interfaces/IStrategyInterface.sol: 0
+src/interfaces/IWETH.sol: 0
+src/interfaces/IWstETH.sol: 0
+src/periphery/StrategyAprOracle.sol: 0
+TOTAL: 0
+=== NatSpec ===
+       0
+=== test_files ===
+      11
+=== test_functions ===
+0
+=== stateless_fuzz ===
+0
+=== foundry_invariant ===
+0
+=== echidna ===
+0:       0
+=== medusa ===
+0:       0
+=== hardhat_fuzz ===
+0
+=== fork ===
+0
+=== certora ===
+       0:       0
+=== halmos ===
+0:       0
+=== hevm ===
+0
+=== docs ===
+README.md
+README.md
+=== commit ===
+521fff2
+=== git_unique_authors ===
+       9
+=== git_contributors ===
+  45 Schlagonia
+  25 Schlag
+   4 spalen0
+   2 FP
+   1 poolpitako
+   1 johnnyonline
+   1 William X
+   1 Val
+   1 Facu
+=== git_source_contributors ===
+3673	1370	Schlagonia
+398	182	Schlag
+5	5	poolpitako
+2	88	FP
+=== git_repo_age ===
+2023-04-24T11:54:30-06:00
+2026-06-29T15:11:23-06:00
+=== git_total_commits ===
+81
+=== git_merge_count ===
+       5
+=== git_hotspots ===
+  17 src/Strategy.sol
+  14 src/test/utils/Setup.sol
+  14 src/test/Operation.t.sol
+  10 src/test/Shutdown.t.sol
+   9 src/periphery/StrategyAprOracle.sol
+   6 src/test/Oracle.t.sol
+   6 src/test/FunctionSignature.t.sol
+   5 src/test/WithdrawalQueue.t.sol
+   5 src/interfaces/IStrategyInterface.sol
+   5 src/BaseLSTAccumulator.sol
+   4 src/interfaces/IBaseLSTAccumulator.sol
+   3 src/test/utils/Setup4626.sol
+   3 src/test/utils/ExtendedTest.sol
+   3 src/test/mocks/MockWithdrawalQueue.sol
+   3 src/test/StethSpecific.t.sol
+=== git_recent_30d ===
+521fff2 build: factory
+68f946a chore: updates
+=== git_large_diffs ===
+1671 COMMIT:fab9dad Schlagonia feat: implement stETH accumulator strategy
+1065 COMMIT:68f946a Schlagonia chore: updates
+664 COMMIT:cb080ca Schlagonia fix: updates
+496 COMMIT:8345a4e Schlagonia build: add contracts
+396 COMMIT:d030074 Schlagonia test: add tests
+310 COMMIT:8dc8c81 Schlagonia build: 4626
+169 COMMIT:521fff2 Schlagonia build: factory
+144 COMMIT:f8afbce Schlag build: update to 303 (#40)
+121 COMMIT:f500a11 Schlag fix: tests (#23)
+114 COMMIT:e5eeb1e Schlagonia build: apply updates

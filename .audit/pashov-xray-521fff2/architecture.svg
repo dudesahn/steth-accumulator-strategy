@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1473" height="490" viewBox="0 0 589 196" font-family="Arial, sans-serif">
+  <defs>
+    <marker id="ah" viewBox="0 0 8 6" refX="8" refY="3"
+      markerWidth="4" markerHeight="3" orient="auto">
+      <path d="M0.5,0.5 L7,3 L0.5,5.5" fill="none" stroke="#94A3B8"
+        stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round"/>
+    </marker>
+    <filter id="shadow" x="-6%" y="-8%" width="112%" height="128%">
+      <feDropShadow dx="0" dy="0.5" stdDeviation="0.8"
+        flood-color="#000" flood-opacity="0.05"/>
+    </filter>
+  </defs>
+  <rect width="589" height="196" fill="#F8F9FB" rx="3"/>
+  <text x="295" y="11" text-anchor="middle" font-size="6" font-weight="700" fill="#1E293B">stETH Accumulator Strategy Architecture</text>
+  <rect x="220" y="16" width="150" height="10" rx="3" fill="#fff" stroke="#E2E5EA" stroke-width="0.4"/>
+  <rect x="225" y="18.5" width="5" height="5" rx="2.5" fill="#fff" stroke="#E2E5EA" stroke-width="0.4"/>
+  <text x="233" y="22.5" font-size="3.5" fill="#1E293B">Actor</text>
+  <rect x="265" y="18.5" width="5" height="5" rx="1.5" fill="#fff" stroke="#E2E5EA" stroke-width="0.4"/>
+  <rect x="266" y="19.5" width="0.8" height="3" rx="0.4" fill="#3B82F6"/>
+  <text x="273" y="22.5" font-size="3.5" fill="#1E293B">Protocol</text>
+  <rect x="313" y="18.5" width="5" height="5" rx="1.5" fill="#fff" stroke="#E2E5EA" stroke-width="0.4"/>
+  <rect x="314" y="19.5" width="0.8" height="3" rx="0.4" fill="#F59E0B"/>
+  <text x="321" y="22.5" font-size="3.5" fill="#1E293B">External</text>
+  <rect x="20.0" y="84.0" width="549.4" height="40.0" rx="5" fill="#EDEEF2"/>
+  <text x="566.4" y="89.0" text-anchor="end" font-size="3.5" fill="#94A3B8" font-weight="500">In-scope contracts</text>
+  <rect x="20.0" y="146.0" width="549.4" height="40.0" rx="5" fill="#EDEEF2"/>
+  <text x="566.4" y="151.0" text-anchor="end" font-size="3.5" fill="#94A3B8" font-weight="500">External dependencies</text>
+  <rect x="20.0" y="22.0" width="549.4" height="34.0" rx="5" fill="#EDEEF2"/>
+  <text x="566.4" y="27.0" text-anchor="end" font-size="3.5" fill="#94A3B8" font-weight="500">Actors</text>
+  <path d="M61.6,46.0 C61.6,70.0 116.2,70.0 116.2,94.0" fill="none" stroke="#94A3B8" stroke-width="0.5" marker-end="url(#ah)"/>
+  <path d="M148.6,46.0 C148.6,70.0 116.2,70.0 116.2,94.0" fill="none" stroke="#94A3B8" stroke-width="0.5" marker-end="url(#ah)"/>
+  <path d="M238.0,46.0 C238.0,70.0 116.2,70.0 116.2,94.0" fill="none" stroke="#94A3B8" stroke-width="0.5" marker-end="url(#ah)"/>
+  <path d="M238.0,46.0 C238.0,70.0 273.4,70.0 273.4,94.0" fill="none" stroke="#94A3B8" stroke-width="0.5" marker-end="url(#ah)"/>
+  <path d="M329.0,112.0 C372.7,130.0 431.0,130.0 474.6,114.0" fill="none" stroke="#94A3B8" stroke-width="0.5" marker-end="url(#ah)"/>
+  <path d="M116.2,114.0 C116.2,135.0 294.6,135.0 294.6,156.0" fill="none" stroke="#94A3B8" stroke-width="0.5" marker-end="url(#ah)"/>
+  <path d="M116.2,114.0 C116.2,135.0 67.8,135.0 67.8,156.0" fill="none" stroke="#94A3B8" stroke-width="0.5" marker-end="url(#ah)"/>
+  <path d="M116.2,114.0 C116.2,135.0 173.4,135.0 173.4,156.0" fill="none" stroke="#94A3B8" stroke-width="0.5" marker-end="url(#ah)"/>
+  <path d="M517.0,114.0 C517.0,135.0 468.6,135.0 468.6,156.0" fill="none" stroke="#94A3B8" stroke-width="0.5" marker-end="url(#ah)"/>
+  <path d="M401.8,114.0 C401.8,135.0 294.6,135.0 294.6,156.0" fill="none" stroke="#94A3B8" stroke-width="0.5" marker-end="url(#ah)"/>
+  <g filter="url(#shadow)">
+    <rect x="30.0" y="32.0" width="63.2" height="14" rx="7" fill="#fff" stroke="#E2E5EA" stroke-width="0.5"/>
+    <text x="61.6" y="40.8" text-anchor="middle" font-size="4.8" font-weight="600" fill="#1E293B">Depositor</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="115.2" y="32.0" width="66.8" height="14" rx="7" fill="#fff" stroke="#E2E5EA" stroke-width="0.5"/>
+    <text x="148.6" y="40.8" text-anchor="middle" font-size="4.8" font-weight="600" fill="#1E293B">Keeper</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="204.0" y="32.0" width="68.0" height="14" rx="7" fill="#fff" stroke="#E2E5EA" stroke-width="0.5"/>
+    <text x="238.0" y="40.8" text-anchor="middle" font-size="4.8" font-weight="600" fill="#1E293B">Management</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="217.8" y="94.0" width="111.2" height="20" rx="3" fill="#fff" stroke="#E2E5EA" stroke-width="0.5"/>
+    <rect x="220.8" y="97.0" width="1.4" height="14" rx="0.6" fill="#3B82F6"/>
+    <text x="273.4" y="103.5" text-anchor="middle" font-size="4.8" font-weight="600" fill="#1E293B">Strategy4626Factory</text>
+    <text x="273.4" y="108.5" text-anchor="middle" font-size="3.5" fill="#64748B">deploys variants</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="36.6" y="94.0" width="159.2" height="20" rx="3" fill="#fff" stroke="#E2E5EA" stroke-width="0.5"/>
+    <rect x="39.6" y="97.0" width="1.4" height="14" rx="0.6" fill="#3B82F6"/>
+    <text x="116.2" y="103.5" text-anchor="middle" font-size="4.8" font-weight="600" fill="#1E293B">Strategy / BaseLSTAccumulator</text>
+    <text x="116.2" y="108.5" text-anchor="middle" font-size="3.5" fill="#64748B">WETH -&gt; stETH</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="474.6" y="94.0" width="84.8" height="20" rx="3" fill="#fff" stroke="#E2E5EA" stroke-width="0.5"/>
+    <rect x="477.6" y="97.0" width="1.4" height="14" rx="0.6" fill="#3B82F6"/>
+    <text x="517.0" y="103.5" text-anchor="middle" font-size="4.8" font-weight="600" fill="#1E293B">Strategy4626</text>
+    <text x="517.0" y="108.5" text-anchor="middle" font-size="3.5" fill="#64748B">wstETH vault layer</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="351.0" y="94.0" width="101.6" height="20" rx="3" fill="#fff" stroke="#E2E5EA" stroke-width="0.5"/>
+    <rect x="354.0" y="97.0" width="1.4" height="14" rx="0.6" fill="#3B82F6"/>
+    <text x="401.8" y="103.5" text-anchor="middle" font-size="4.8" font-weight="600" fill="#1E293B">StrategyAprOracle</text>
+    <text x="401.8" y="108.5" text-anchor="middle" font-size="3.5" fill="#64748B">fixed APR</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="243.8" y="156.0" width="101.6" height="20" rx="3" fill="#fff" stroke="#E2E5EA" stroke-width="0.5"/>
+    <rect x="246.8" y="159.0" width="1.4" height="14" rx="0.6" fill="#F59E0B"/>
+    <text x="294.6" y="165.5" text-anchor="middle" font-size="4.8" font-weight="600" fill="#1E293B">TokenizedStrategy</text>
+    <text x="294.6" y="170.5" text-anchor="middle" font-size="3.5" fill="#64748B">ERC4626 accounting</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="32.6" y="156.0" width="70.4" height="20" rx="3" fill="#fff" stroke="#E2E5EA" stroke-width="0.5"/>
+    <rect x="35.6" y="159.0" width="1.4" height="14" rx="0.6" fill="#F59E0B"/>
+    <text x="67.8" y="165.5" text-anchor="middle" font-size="4.8" font-weight="600" fill="#1E293B">Lido stETH</text>
+    <text x="67.8" y="170.5" text-anchor="middle" font-size="3.5" fill="#64748B">submit / queue</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="125.0" y="156.0" width="96.8" height="20" rx="3" fill="#fff" stroke="#E2E5EA" stroke-width="0.5"/>
+    <rect x="128.0" y="159.0" width="1.4" height="14" rx="0.6" fill="#F59E0B"/>
+    <text x="173.4" y="165.5" text-anchor="middle" font-size="4.8" font-weight="600" fill="#1E293B">Curve stETH Pool</text>
+    <text x="173.4" y="170.5" text-anchor="middle" font-size="3.5" fill="#64748B">swap route</text>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="405.8" y="156.0" width="125.6" height="20" rx="3" fill="#fff" stroke="#E2E5EA" stroke-width="0.5"/>
+    <rect x="408.8" y="159.0" width="1.4" height="14" rx="0.6" fill="#F59E0B"/>
+    <text x="468.6" y="165.5" text-anchor="middle" font-size="4.8" font-weight="600" fill="#1E293B">wstETH + ERC4626 Vault</text>
+    <text x="468.6" y="170.5" text-anchor="middle" font-size="3.5" fill="#64748B">wrapped position</text>
+  </g>
+  <rect x="67.7" y="65.0" width="42.4" height="6.0" rx="1" fill="#F8F9FB"/>
+  <text x="88.9" y="70.0" font-size="4" fill="#1E293B" font-weight="500" text-anchor="middle">deposit withdraw</text>
+  <rect x="117.2" y="65.0" width="30.4" height="6.0" rx="1" fill="#F8F9FB"/>
+  <text x="132.4" y="70.0" font-size="4" fill="#1E293B" font-weight="500" text-anchor="middle">report tend</text>
+  <rect x="155.9" y="65.0" width="42.4" height="6.0" rx="1" fill="#F8F9FB"/>
+  <text x="177.1" y="70.0" font-size="4" fill="#1E293B" font-weight="500" text-anchor="middle">configure unwind</text>
+  <rect x="242.9" y="65.0" width="25.6" height="6.0" rx="1" fill="#F8F9FB"/>
+  <text x="255.7" y="70.0" font-size="4" fill="#1E293B" font-weight="500" text-anchor="middle">set roles</text>
+  <rect x="385.4" y="129.0" width="32.8" height="6.0" rx="1" fill="#F8F9FB"/>
+  <text x="401.8" y="134.0" font-size="4" fill="#1E293B" font-weight="500" text-anchor="middle">deploy clone</text>
+  <rect x="180.6" y="130.0" width="49.6" height="6.0" rx="1" fill="#F8F9FB"/>
+  <text x="205.4" y="135.0" font-size="4" fill="#1E293B" font-weight="500" text-anchor="middle">delegate accounting</text>
+  <rect x="76.8" y="130.0" width="30.4" height="6.0" rx="1" fill="#F8F9FB"/>
+  <text x="92.0" y="135.0" font-size="4" fill="#1E293B" font-weight="500" text-anchor="middle">stake claim</text>
+  <rect x="130.8" y="130.0" width="28.0" height="6.0" rx="1" fill="#F8F9FB"/>
+  <text x="144.8" y="135.0" font-size="4" fill="#1E293B" font-weight="500" text-anchor="middle">swap stETH</text>
+  <rect x="476.4" y="130.0" width="32.8" height="6.0" rx="1" fill="#F8F9FB"/>
+  <text x="492.8" y="135.0" font-size="4" fill="#1E293B" font-weight="500" text-anchor="middle">wrap deposit</text>
+  <rect x="336.6" y="130.0" width="23.2" height="6.0" rx="1" fill="#F8F9FB"/>
+  <text x="348.2" y="135.0" font-size="4" fill="#1E293B" font-weight="500" text-anchor="middle">apr read</text>
+</svg>

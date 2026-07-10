@@ -1,0 +1,215 @@
+{
+  "documentType": "codex-security.scan-manifest",
+  "scan": {
+    "artifacts": [
+      {
+        "mediaType": "application/json",
+        "path": "findings.json",
+        "sha256": "66e55a2009b371e0f7cac7faa508cfe2918341344cd4472e5b45391c57cb9823"
+      },
+      {
+        "mediaType": "application/json",
+        "path": "coverage.json",
+        "sha256": "46d13d876c46da37164cb2213a8679d485735604d7cb7bd441f5282d6b4c724c"
+      },
+      {
+        "mediaType": "application/octet-stream",
+        "path": "artifacts/02_discovery/worker_outputs/shard_02_strategy.md",
+        "sha256": "835754eebbb75dbdeca97fdeb2ce9cd3989c853d6d756b622d958fef82bf2c80"
+      },
+      {
+        "mediaType": "application/octet-stream",
+        "path": "artifacts/02_discovery/worker_outputs/shard_03_4626_factory.md",
+        "sha256": "0c9f244447d8c30a67d904e28cbea0d2bcd7529e1f241960796fffc9862b29cd"
+      },
+      {
+        "mediaType": "application/octet-stream",
+        "path": "artifacts/02_discovery/worker_outputs/shard_06_deploy.md",
+        "sha256": "1807a86895ab81f7abc7a063ac3d3ca08a01df9c50dd2bb3563ecbb4cd4d3777"
+      },
+      {
+        "mediaType": "application/octet-stream",
+        "path": "artifacts/03_coverage/repository_coverage_ledger.md",
+        "sha256": "2387652625a0e9f357379b7f1bf1c90d612abbbc8cfb58cec846abc990355c6a"
+      },
+      {
+        "mediaType": "application/octet-stream",
+        "path": "artifacts/05_findings/CS-351C58EB-001/attack_path_analysis_report.md",
+        "sha256": "4d358a684e0ac3dbbfaf081d03297e5b5645e73da5088b6859e08b17d7e03a66"
+      },
+      {
+        "mediaType": "application/octet-stream",
+        "path": "artifacts/05_findings/CS-351C58EB-001/candidate_ledger.jsonl",
+        "sha256": "2c45dd477ee57810046aebe38f29bf97489188b35f1e73f74dd68649cc89cbde"
+      },
+      {
+        "mediaType": "application/octet-stream",
+        "path": "artifacts/05_findings/CS-351C58EB-001/validation_report.md",
+        "sha256": "2e59412fa0f84c87f33c0823deb749cfc590401f35ee719f75848ab0e954c8aa"
+      },
+      {
+        "mediaType": "application/octet-stream",
+        "path": "artifacts/05_findings/CS-351C58EB-002/attack_path_analysis_report.md",
+        "sha256": "31a5fa9aabec3856e75a22fc265d9bb83efd66f3a4d6b3d7da7ead5ef9bbc2e6"
+      },
+      {
+        "mediaType": "application/octet-stream",
+        "path": "artifacts/05_findings/CS-351C58EB-002/candidate_ledger.jsonl",
+        "sha256": "d06056421a182dca1a23a2e2a35c17586b26d25d501347cf93c6b65ca41e3d27"
+      },
+      {
+        "mediaType": "application/octet-stream",
+        "path": "artifacts/05_findings/CS-351C58EB-002/validation_report.md",
+        "sha256": "922e3a7587cee17d69371de182a44208b6038547c005237a55af02073ba5ee48"
+      },
+      {
+        "mediaType": "application/octet-stream",
+        "path": "artifacts/05_findings/CS-351C58EB-003/attack_path_analysis_report.md",
+        "sha256": "451709942ed0a4e0e6db15856d569b3c2567b1a63e3ab10bc84dc843d80a0863"
+      },
+      {
+        "mediaType": "application/octet-stream",
+        "path": "artifacts/05_findings/CS-351C58EB-003/candidate_ledger.jsonl",
+        "sha256": "777dc9f0e69666a5e6358ed09c5966a21eaf69690369256b0f44c00e086ebb50"
+      },
+      {
+        "mediaType": "application/octet-stream",
+        "path": "artifacts/05_findings/CS-351C58EB-003/validation_report.md",
+        "sha256": "f6ebc91f05db3826d2f3e9c487f8f6f1b23965120a275e340c6890ccde1848af"
+      },
+      {
+        "mediaType": "application/octet-stream",
+        "path": "artifacts/05_findings/CS-351C58EB-004/attack_path_analysis_report.md",
+        "sha256": "86604febe74a5f0b5eb4d4eca9365faf21724fe0dd9ccd378eb43e2bbcb14b55"
+      },
+      {
+        "mediaType": "application/octet-stream",
+        "path": "artifacts/05_findings/CS-351C58EB-004/candidate_ledger.jsonl",
+        "sha256": "9a6925e878993abf791c38e7263ee8a64facc9f6b706c346ce4369ca435e0d91"
+      },
+      {
+        "mediaType": "application/octet-stream",
+        "path": "artifacts/05_findings/CS-351C58EB-004/validation_report.md",
+        "sha256": "153223cb9f1e681eae201740c52c50d00438858b7f0f43388409a620505bdd82"
+      },
+      {
+        "mediaType": "application/octet-stream",
+        "path": "artifacts/05_findings/CS-351C58EB-005/attack_path_analysis_report.md",
+        "sha256": "bcf5d213558b9f7b122f048274aa181ca2e8ef20bfa1c7b697b7aaa5e064aba5"
+      },
+      {
+        "mediaType": "application/octet-stream",
+        "path": "artifacts/05_findings/CS-351C58EB-005/candidate_ledger.jsonl",
+        "sha256": "7ae0ef647637d7f70e8ee5c5aac82bbd47591b558e93f33dd932cecae54c15a8"
+      },
+      {
+        "mediaType": "application/octet-stream",
+        "path": "artifacts/05_findings/CS-351C58EB-005/validation_report.md",
+        "sha256": "68397cc123c0bc7893c87bd5f89b4f641fc3eea4f9c7c94fa08df73e73b7b35b"
+      }
+    ],
+    "completedAt": "2026-07-08T17:24:23Z",
+    "coverageRef": "coverage.json",
+    "findingsRef": "findings.json",
+    "id": "351c58eb-604e-4d06-91a4-9a0d6e65626b",
+    "producer": {
+      "name": "Codex Security",
+      "version": "0.1.10"
+    },
+    "scope": {
+      "artifactsReviewed": [
+        "artifacts/01_context/threat_model.md",
+        "artifacts/02_discovery/deep_review_input.jsonl",
+        "artifacts/02_discovery/finding_discovery_report.md",
+        "artifacts/03_coverage/repository_coverage_ledger.md",
+        "artifacts/04_reconciliation/deduped_candidates.jsonl",
+        "artifacts/05_findings/validation_summary.md",
+        "artifacts/05_findings/attack_path_analysis_report.md"
+      ],
+      "context": "The scan was anchored to git revision 521fff28ad978a37115be8995a1d631611fa1d3d. Existing untracked `.audit/` material was excluded from scan input and used only as a final mirror destination.",
+      "excludePaths": [
+        "src/test/**",
+        "test/**",
+        "mocks/**",
+        "lib/**",
+        "out/**",
+        "cache/**",
+        "broadcast/**",
+        ".audit/**",
+        "x-ray/**",
+        "scanner reports",
+        "cached analysis"
+      ],
+      "includePaths": [
+        "src/BaseLSTAccumulator.sol",
+        "src/Strategy.sol",
+        "src/Strategy4626.sol",
+        "src/Strategy4626Factory.sol",
+        "src/periphery/StrategyAprOracle.sol",
+        "src/interfaces/IBaseLSTAccumulator.sol",
+        "src/interfaces/IStrategyInterface.sol",
+        "src/interfaces/IStrategy4626Interface.sol",
+        "src/interfaces/ICurve.sol",
+        "src/interfaces/IQueue.sol",
+        "src/interfaces/ISTETH.sol",
+        "src/interfaces/IWETH.sol",
+        "src/interfaces/IWstETH.sol",
+        "script/Deploy.s.sol",
+        "script/Deploy4626.s.sol",
+        "script/Deploy4626Factory.s.sol"
+      ],
+      "limitations": [
+        "Vendored Yearn, OpenZeppelin, Lido, Curve, WETH, wstETH, and ERC4626 implementations were treated as out of scope except for first-party integration semantics.",
+        "No live production deployment or registry state was used to prove external `StrategyAprOracle` registration.",
+        "Severity for ERC4626 headroom issues depends on the downstream vault selected at deployment time."
+      ],
+      "runtimeStatus": "Production contracts compiled with `forge build`; targeted fork tests and one disposable PoC passed. No missing test dependency such as `vyper` was required.",
+      "summary": "Production-code-only repository scan of first-party Solidity contracts and deploy scripts. Tests, mocks, vendored dependencies, build output, prior audit artifacts, scanner reports, and cached analysis were excluded from scan input.",
+      "validationMode": "Independent discovery shards, targeted validation, counterevidence review, and attack-path policy calibration."
+    },
+    "sealedAt": "2026-07-08T17:24:23Z",
+    "startedAt": "2026-07-08T16:45:48Z",
+    "status": "completed",
+    "target": {
+      "displayName": "steth-accumulator-strategy",
+      "kind": "git_revision",
+      "remote": "https://github.com/dudesahn/steth-accumulator-strategy.git",
+      "revision": "521fff28ad978a37115be8995a1d631611fa1d3d",
+      "targetId": "521fff28ad978a37115be8995a1d631611fa1d3d"
+    },
+    "threatModel": {
+      "assets": [
+        "Deposited WETH, stETH, wstETH, ERC4626 vault shares, pending Lido withdrawal claims, Yearn strategy shares, and privileged role authority.",
+        "Allocator APR signals when periphery oracle code is deployed and registered."
+      ],
+      "assumptions": [
+        "Yearn TokenizedStrategy and periphery base contracts enforce their documented role checks and share-accounting semantics.",
+        "Canonical WETH, stETH, wstETH, Lido withdrawal queue, and Curve contracts behave according to their public APIs.",
+        "Management and emergency roles are trusted; harmful behavior requiring only those roles is generally not a final security finding unless it creates a clear privilege delta.",
+        "Downstream ERC4626 vaults used by `Strategy4626` have wstETH as `asset()` but may have finite live deposit capacity."
+      ],
+      "attackerCapabilities": [
+        "Call public or inherited strategy entrypoints when deposits are open or the caller is allowed.",
+        "Transfer stETH, wstETH, WETH, or ETH directly to strategy addresses.",
+        "Influence public timing around Curve pricing, Lido queue state, and keeper/report execution.",
+        "Compromise or act as a lower-trust keeper for keeper-scoped attack paths."
+      ],
+      "securityObjectives": [
+        "Only authorized roles may move funds or change risk parameters.",
+        "Management risk switches must gate the operational callbacks they are documented to control.",
+        "Direct token donations must not make maintenance flows revert or over-report value.",
+        "ERC4626 vault interactions must respect live capacity and unit conversions at the actual sink.",
+        "Deployment scripts must not silently leave strategies under unintended roles."
+      ],
+      "summary": "The repository implements Yearn V3 TokenizedStrategy contracts that accept WETH, stake or swap into stETH, optionally wrap into wstETH and deposit into a downstream ERC4626 vault, and rely on management, keeper, and emergency roles for risk controls and maintenance. The main security objectives are preserving asset/share accounting, preventing unauthorized fund movement, preventing untrusted griefing of reports/tends/deposits, and keeping deployment role configuration consistent.",
+      "trustBoundaries": [
+        "Depositors and vault allocators are outside the operator boundary and interact through inherited ERC4626 strategy entrypoints.",
+        "Management controls risk parameters, deposit gates, role defaults, manual routes, and deployment setup.",
+        "Keepers can report, tend, and claim withdrawals but should not bypass management-only risk decisions.",
+        "Emergency authorized accounts can perform sensitive recovery actions.",
+        "External protocols such as Lido, Curve, WETH, wstETH, and downstream ERC4626 vaults are external dependencies whose live limits and rates affect safety."
+      ]
+    }
+  },
+  "schemaVersion": "1.0"
+}

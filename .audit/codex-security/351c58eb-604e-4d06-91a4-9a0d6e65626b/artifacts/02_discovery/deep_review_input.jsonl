@@ -1,0 +1,16 @@
+{"path":"src/BaseLSTAccumulator.sol","area":"src"}
+{"path":"src/Strategy.sol","area":"src"}
+{"path":"src/Strategy4626.sol","area":"src"}
+{"path":"src/Strategy4626Factory.sol","area":"src"}
+{"path":"src/periphery/StrategyAprOracle.sol","area":"src/periphery"}
+{"path":"src/interfaces/IBaseLSTAccumulator.sol","area":"src/interfaces"}
+{"path":"src/interfaces/IStrategyInterface.sol","area":"src/interfaces"}
+{"path":"src/interfaces/IStrategy4626Interface.sol","area":"src/interfaces"}
+{"path":"src/interfaces/ICurve.sol","area":"src/interfaces"}
+{"path":"src/interfaces/IQueue.sol","area":"src/interfaces"}
+{"path":"src/interfaces/ISTETH.sol","area":"src/interfaces"}
+{"path":"src/interfaces/IWETH.sol","area":"src/interfaces"}
+{"path":"src/interfaces/IWstETH.sol","area":"src/interfaces"}
+{"path":"script/Deploy.s.sol","area":"script"}
+{"path":"script/Deploy4626.s.sol","area":"script"}
+{"path":"script/Deploy4626Factory.s.sol","area":"script"}

@@ -1,0 +1,342 @@
+{
+  "documentType": "codex-security.findings",
+  "findings": [
+    {
+      "attackPath": {
+        "dataflow": {
+          "outcome": "maintenance call reverts while the loose balance exceeds downstream vault deposit headroom",
+          "sink": "`vault.deposit(wstETHBalance, address(this))`",
+          "source": "permissionless direct stETH or wstETH transfer to the strategy address",
+          "summary": "direct token transfer to strategy -> `balanceOfLST` or `balanceOfWstETH` -> `_stake` wraps/reads loose balance -> `vault.deposit(wstETHBalance, address(this))` -> ERC4626 maxDeposit revert"
+        },
+        "evidenceRefs": [
+          "stake-deposits-entire-loose-wsteth",
+          "report-enters-stake"
+        ],
+        "impact": {
+          "level": "medium",
+          "why": "The effect is a stuck maintenance path rather than an asset drain."
+        },
+        "likelihood": {
+          "level": "high",
+          "why": "Token donation is permissionless and very small donations can matter when vault headroom is zero or near zero."
+        },
+        "limitations": [
+          "Severity depends on the chosen downstream vault and its live deposit headroom."
+        ],
+        "reachability": {
+          "attacker": "external token donor",
+          "entrypoint": "direct stETH or wstETH transfer followed by report, tend, deposit deployment, or manual stake",
+          "outcome": "availability griefing and operator intervention for affected vault configurations",
+          "preconditions": [
+            "The downstream ERC4626 vault has finite or temporarily exhausted `maxDeposit` for the strategy.",
+            "A subsequent authorized maintenance flow reaches `_stake`."
+          ],
+          "summary": "The attacker cannot call `_stake` directly, but direct token transfers are permissionless and normal keeper, management, or deposit workflows provide the trigger."
+        },
+        "summary": "An unauthenticated donor transfers stETH or wstETH to the strategy, waits for a normal maintenance trigger, and causes `_stake` to call `vault.deposit` with more wstETH than the downstream vault currently accepts."
+      },
+      "codeEvidence": [
+        {
+          "code": "function _stake(uint256 _amount) internal virtual override {\n    super._stake(_amount);\n\n    uint256 stethBalance = balanceOfLST();\n    if (stethBalance > 0) {\n        wstETH.wrap(stethBalance);\n    }\n\n    uint256 wstETHBalance = balanceOfWstETH();\n    // Can round to 0 if stethBalance is too small\n    if (wstETHBalance == 0) return;\n\n    vault.deposit(wstETHBalance, address(this));\n}",
+          "endLine": 42,
+          "explanation": "`_stake` deposits `balanceOfWstETH()` after wrapping all loose stETH, so direct donations are included in the amount sent to the downstream vault.",
+          "id": "stake-deposits-entire-loose-wsteth",
+          "label": "Stake deposits the entire loose wstETH balance",
+          "language": "solidity",
+          "path": "src/Strategy4626.sol",
+          "startLine": 29
+        },
+        {
+          "code": "function availableDepositLimit(address _owner) public view virtual override returns (uint256) {\n    uint256 superLimit = super.availableDepositLimit(_owner);\n    if (superLimit == 0) return 0;\n\n    uint256 maxDeposit = vault.maxDeposit(address(this));\n    if (maxDeposit == type(uint256).max) return superLimit;\n\n    return Math.min(superLimit, _stETHValue(maxDeposit));\n}",
+          "endLine": 63,
+          "explanation": "The vault cap is used to limit new WETH deposits, but it is not re-applied to the actual loose wstETH balance deposited by `_stake`.",
+          "id": "available-limit-caps-new-weth-only",
+          "label": "maxDeposit only reduces the advertised new deposit limit",
+          "language": "solidity",
+          "path": "src/Strategy4626.sol",
+          "startLine": 55
+        },
+        {
+          "code": "function _harvestAndReport() internal virtual override returns (uint256 _totalAssets) {\n    require(pendingRedemptions == 0, \"Pending redemptions\");\n\n    _claimAndSellRewards();\n\n    // Stake any loose asset\n    _stake(Math.min(balanceOfAsset(), availableDepositLimit(address(this))));",
+          "endLine": 153,
+          "explanation": "A normal keeper report can reach `_stake`, where donated loose wstETH is deposited without its own maxDeposit cap.",
+          "id": "report-enters-stake",
+          "label": "Keeper report calls the staking path",
+          "language": "solidity",
+          "path": "src/BaseLSTAccumulator.sol",
+          "startLine": 146
+        }
+      ],
+      "confidence": {
+        "level": "high",
+        "rationale": "Direct source tracing plus a disposable Foundry PoC against copied target code confirmed the maxDeposit revert; remaining uncertainty is deployment-specific vault headroom."
+      },
+      "extensions": {
+        "attackPathReport": "artifacts/05_findings/CS-351C58EB-003/attack_path_analysis_report.md",
+        "candidateId": "CS-351C58EB-003",
+        "candidateLedger": "artifacts/05_findings/CS-351C58EB-003/candidate_ledger.jsonl",
+        "confidenceScore": 0.88,
+        "validationReport": "artifacts/05_findings/CS-351C58EB-003/validation_report.md"
+      },
+      "findingId": "csf_7dc94802bf292fbeefd70a6f",
+      "fingerprints": {
+        "algorithm": "codex-security/v1",
+        "primary": "codex-security/v1:sha256:960bad4f874d4b4ff33ac078b7d61d7187a3b878ec0d4516ce7fb04c569b6421"
+      },
+      "identity": {
+        "anchor": "strategy4626-loose-wsteth-maxdeposit",
+        "instance": "src/strategy4626.sol/line-41"
+      },
+      "locations": [
+        {
+          "endLine": 41,
+          "path": "src/Strategy4626.sol",
+          "role": "root_control",
+          "startLine": 41
+        },
+        {
+          "endLine": 63,
+          "path": "src/Strategy4626.sol",
+          "role": "incomplete_limit_check",
+          "startLine": 55
+        },
+        {
+          "endLine": 153,
+          "path": "src/BaseLSTAccumulator.sol",
+          "role": "keeper_report_entrypoint",
+          "startLine": 146
+        }
+      ],
+      "occurrenceId": "occ_d3135feb626b8fd205bc13f0",
+      "preventiveControls": [
+        "Treat direct token transfers as attacker-controlled balances in all token-flow reviews.",
+        "For every ERC4626 integration, assert the actual `deposit` amount is no greater than live `maxDeposit` at the sink."
+      ],
+      "provenance": {
+        "source": "Codex Security scan 351c58eb discovery, validation, and attack-path artifacts"
+      },
+      "remediation": "Before calling `vault.deposit`, cap the actual wstETH amount by `vault.maxDeposit(address(this))` and leave surplus wstETH idle or route it through an explicit recovery path. Apply the cap after wrapping loose stETH and before the ERC4626 call, and avoid reverting the whole report/tend path when only donated surplus exceeds vault headroom.",
+      "remediationTests": [
+        "Add a bounded ERC4626 mock test where donated loose wstETH exceeds `maxDeposit` and assert report/tend does not revert.",
+        "Add a zero-headroom test that leaves donated wstETH idle while still reporting correctly."
+      ],
+      "rootCause": {
+        "evidenceRefs": [
+          "available-limit-caps-new-weth-only",
+          "stake-deposits-entire-loose-wsteth"
+        ],
+        "summary": "The violated invariant is that every downstream ERC4626 `deposit` amount must be bounded by the vault's current `maxDeposit`. The implementation checks `maxDeposit` only while calculating how much new WETH can enter, but the later sink deposits the strategy's full loose wstETH balance, including balances created by direct token transfers."
+      },
+      "ruleId": "web3.erc4626.donation-maxdeposit-dos",
+      "severity": {
+        "changeConditions": "Severity would rise if a production downstream vault commonly reaches zero headroom with meaningful strategy debt and no practical emergency recovery, and would fall if `_stake` capped the actual deposit amount or if the integrated vault always returns unlimited `maxDeposit`.",
+        "level": "medium",
+        "rationale": "The issue is externally reachable because anyone can transfer stETH or wstETH directly to the strategy, and the PoC confirmed the revert when loose wstETH exceeds a bounded ERC4626 `maxDeposit`. The consequence is availability and operator-intervention risk rather than direct theft, so medium impact with high likelihood yields medium severity.",
+        "score": 5.2,
+        "scoringSystem": "Codex Security Impact x Likelihood",
+        "vector": "impact=medium,likelihood=high"
+      },
+      "summary": "`Strategy4626._stake` wraps any loose stETH and deposits the strategy's entire loose wstETH balance into the downstream ERC4626 vault. `availableDepositLimit` consults `vault.maxDeposit(address(this))`, but that cap is applied only to new WETH intake, not to the actual loose wstETH amount sent to `vault.deposit`. An unauthenticated token donor can therefore make the next report, tend, deposit deployment, or manual stake revert when the downstream vault has little or no remaining deposit capacity.",
+      "taxonomy": {
+        "category": "Donation griefing / ERC4626 limit bypass",
+        "cwe": [
+          "CWE-400: Uncontrolled Resource Consumption"
+        ]
+      },
+      "title": "Loose wstETH donations can exceed the downstream vault maxDeposit and block maintenance",
+      "validation": {
+        "counterEvidence": [
+          "The attacker sacrifices donated token value and still needs a keeper, management, deposit, or manual-stake trigger to hit the revert.",
+          "Emergency roles may be able to unwind some stuck balances, so the direct impact is availability and intervention cost."
+        ],
+        "evidence": [
+          "`env ETH_RPC_URL=https://ethereum.publicnode.com forge test --match-path src/test/MaxDepositDonationPoC.t.sol -vv --fork-url https://ethereum.publicnode.com` passed 1/1 in the disposable validation copy.",
+          "The original production build also succeeded with `forge build`."
+        ],
+        "evidenceRefs": [
+          "stake-deposits-entire-loose-wsteth",
+          "available-limit-caps-new-weth-only"
+        ],
+        "method": "static source trace plus disposable Foundry PoC",
+        "summary": "Validation copied the target code into a disposable scan artifact, donated loose wstETH to the strategy, bounded a mock ERC4626 vault's deposit capacity, and observed the expected `ERC4626: deposit more than max` revert."
+      }
+    },
+    {
+      "attackPath": {
+        "dataflow": {
+          "outcome": "management-disabled staking still occurs",
+          "sink": "`_stake` conversion of WETH into LST or downstream vault exposure",
+          "source": "keeper-triggered report or tend",
+          "summary": "`setStakeAsset(false)` -> keeper report/tend -> `_harvestAndReport` or `_tend` -> `_stake` -> Lido/Curve/4626 staking side effect"
+        },
+        "evidenceRefs": [
+          "report-stakes-without-flag",
+          "tend-stakes-without-flag",
+          "management-sets-stakeasset"
+        ],
+        "impact": {
+          "level": "medium",
+          "why": "The keeper can reintroduce illiquidity or LST/vault exposure after management tried to disable it."
+        },
+        "likelihood": {
+          "level": "medium",
+          "why": "Keeper report/tend is a normal production workflow, but the caller must already have keeper privileges."
+        },
+        "limitations": [
+          "This does not let arbitrary users move assets and does not by itself drain funds."
+        ],
+        "reachability": {
+          "attacker": "keeper role",
+          "entrypoint": "inherited report or tend callback",
+          "outcome": "idle WETH becomes staked after management disabled staking",
+          "preconditions": [
+            "Management has set `stakeAsset` to false.",
+            "The strategy holds idle WETH or receives idle amount from the inherited callback."
+          ],
+          "summary": "The attacker position is a keeper or compromised keeper. That is privileged, but it is lower-trust than management for changing staking risk controls."
+        },
+        "summary": "A keeper calls report or tend after management disables `stakeAsset`; the callback reaches `_stake` and converts idle WETH despite the management flag."
+      },
+      "codeEvidence": [
+        {
+          "code": "function _deployFunds(uint256 _amount) internal virtual override {\n    if (stakeAsset && _amount > ASSET_DUST) {\n        _stake(_amount);\n    }\n}",
+          "endLine": 112,
+          "explanation": "The deposit deployment path treats `stakeAsset` as a guard before staking WETH.",
+          "id": "deploy-funds-honors-stakeasset",
+          "label": "_deployFunds honors the stakeAsset flag",
+          "language": "solidity",
+          "path": "src/BaseLSTAccumulator.sol",
+          "startLine": 109
+        },
+        {
+          "code": "function _harvestAndReport() internal virtual override returns (uint256 _totalAssets) {\n    require(pendingRedemptions == 0, \"Pending redemptions\");\n\n    _claimAndSellRewards();\n\n    // Stake any loose asset\n    _stake(Math.min(balanceOfAsset(), availableDepositLimit(address(this))));",
+          "endLine": 153,
+          "explanation": "`_harvestAndReport` can be reached by keeper reporting and calls `_stake` even when management has set `stakeAsset` to false.",
+          "id": "report-stakes-without-flag",
+          "label": "Report stakes idle WETH without checking stakeAsset",
+          "language": "solidity",
+          "path": "src/BaseLSTAccumulator.sol",
+          "startLine": 146
+        },
+        {
+          "code": "function _tend(uint256 _totalIdle) internal virtual override {\n    _stake(_totalIdle);\n}",
+          "endLine": 166,
+          "explanation": "`_tend` delegates the idle amount directly to `_stake` without applying the same guard.",
+          "id": "tend-stakes-without-flag",
+          "label": "Tend stakes idle WETH without checking stakeAsset",
+          "language": "solidity",
+          "path": "src/BaseLSTAccumulator.sol",
+          "startLine": 165
+        },
+        {
+          "code": "/// @notice Set whether the strategy will stake asset to LST during harvest\nfunction setStakeAsset(bool _stakeAsset) external virtual onlyManagement {\n    stakeAsset = _stakeAsset;\n    emit StakeAssetUpdated(_stakeAsset);\n}",
+          "endLine": 206,
+          "explanation": "The switch is management-controlled and its notice describes harvest staking, so keeper-triggered report/tend bypasses the management risk control.",
+          "id": "management-sets-stakeasset",
+          "label": "Only management can set stakeAsset",
+          "language": "solidity",
+          "path": "src/BaseLSTAccumulator.sol",
+          "startLine": 203
+        }
+      ],
+      "confidence": {
+        "level": "high",
+        "rationale": "Static tracing and an existing focused fork test confirmed report staking after `stakeAsset=false`; remaining uncertainty is intended semantics."
+      },
+      "extensions": {
+        "attackPathReport": "artifacts/05_findings/CS-351C58EB-002/attack_path_analysis_report.md",
+        "candidateId": "CS-351C58EB-002",
+        "candidateLedger": "artifacts/05_findings/CS-351C58EB-002/candidate_ledger.jsonl",
+        "confidenceScore": 0.82,
+        "validationReport": "artifacts/05_findings/CS-351C58EB-002/validation_report.md"
+      },
+      "findingId": "csf_aade44b3010a30d567b45109",
+      "fingerprints": {
+        "algorithm": "codex-security/v1",
+        "primary": "codex-security/v1:sha256:7679f86e55eb49dfd87695e77c5d0539b355e33bd5af00308ec046874fdd1cf2"
+      },
+      "identity": {
+        "anchor": "baselstaccumulator-stakeasset-keeper-bypass",
+        "instance": "src/baselstaccumulator.sol/line-152"
+      },
+      "locations": [
+        {
+          "endLine": 152,
+          "path": "src/BaseLSTAccumulator.sol",
+          "role": "root_control",
+          "startLine": 152
+        },
+        {
+          "endLine": 166,
+          "path": "src/BaseLSTAccumulator.sol",
+          "role": "second_entrypoint",
+          "startLine": 165
+        },
+        {
+          "endLine": 206,
+          "path": "src/BaseLSTAccumulator.sol",
+          "role": "management_control",
+          "startLine": 203
+        }
+      ],
+      "occurrenceId": "occ_560fa93d9980fa90073a84f1",
+      "preventiveControls": [
+        "Require every management risk switch to have callback coverage tests across deposit, report, tend, and manual paths.",
+        "Document whether keepers are allowed to override each management-controlled staking mode."
+      ],
+      "provenance": {
+        "source": "Codex Security scan 351c58eb discovery, validation, and attack-path artifacts"
+      },
+      "remediation": "Apply the `stakeAsset` guard consistently in `_harvestAndReport` and `_tend`, or split the configuration into explicitly documented deposit-staking and keeper-maintenance-staking controls. If staking is disabled, report should skip `_stake` and tend should return without moving idle WETH.",
+      "remediationTests": [
+        "Add tests that set `stakeAsset=false` and assert `report` does not call the Lido/Curve staking path.",
+        "Add tests that set `stakeAsset=false` and assert `tend` leaves idle WETH unchanged."
+      ],
+      "rootCause": {
+        "evidenceRefs": [
+          "deploy-funds-honors-stakeasset",
+          "report-stakes-without-flag",
+          "tend-stakes-without-flag",
+          "management-sets-stakeasset"
+        ],
+        "summary": "The violated invariant is that the management staking switch should gate all automatic staking paths, not only deposit deployment. The implementation applies the guard in `_deployFunds` but omits it from report and tend callbacks."
+      },
+      "ruleId": "web3.strategy.keeper-risk-control-bypass",
+      "severity": {
+        "changeConditions": "Severity would rise if keeper access is permissionless or broadly delegated and management uses `stakeAsset=false` as an emergency stop, and would fall if the project documents separate deposit-only semantics for the flag.",
+        "level": "low",
+        "rationale": "The effect can reintroduce LST/vault exposure and reduce liquidity after management disables staking, but exploitation requires the keeper role and does not let arbitrary users steal funds. The management-vs-keeper privilege delta keeps it reportable while the trusted role precondition lowers severity.",
+        "score": 3.6,
+        "scoringSystem": "Codex Security Impact x Likelihood",
+        "vector": "impact=medium,likelihood=medium"
+      },
+      "summary": "`setStakeAsset(false)` is the management-controlled switch that disables automatic staking in `_deployFunds`, but keeper-triggered report and tend callbacks still call `_stake` without the same guard. A keeper can therefore move idle WETH into stETH or the downstream vault after management disables staking, crossing the intended management risk-control boundary.",
+      "taxonomy": {
+        "category": "Privilege boundary bypass / operational control bypass",
+        "cwe": [
+          "CWE-284: Improper Access Control"
+        ]
+      },
+      "title": "Keeper report and tend paths bypass the management stakeAsset disable switch",
+      "validation": {
+        "counterEvidence": [
+          "The path is keeper-gated and not reachable by arbitrary depositors.",
+          "The state variable comment mentions deposits, which leaves some intent ambiguity, but the setter notice explicitly mentions harvest staking."
+        ],
+        "evidence": [
+          "`env ETH_RPC_URL=https://ethereum.publicnode.com forge test --match-test test_harvestStakesBypassesStakeAssetFlag -vv --fork-url https://ethereum.publicnode.com` passed 1/1.",
+          "`forge build` succeeded for the production contracts."
+        ],
+        "evidenceRefs": [
+          "report-stakes-without-flag",
+          "tend-stakes-without-flag"
+        ],
+        "method": "static source trace and focused fork test",
+        "summary": "Validation traced the flag from `setStakeAsset` to all staking callbacks and used the existing focused fork test to confirm report can stake idle WETH after `stakeAsset` is disabled."
+      }
+    }
+  ],
+  "scanId": "351c58eb-604e-4d06-91a4-9a0d6e65626b",
+  "schemaVersion": "1.0"
+}

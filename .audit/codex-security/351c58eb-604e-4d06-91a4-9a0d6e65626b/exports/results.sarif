@@ -1,0 +1,189 @@
+{
+  "$schema": "https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/schemas/sarif-schema-2.1.0.json",
+  "runs": [
+    {
+      "automationDetails": {
+        "id": "351c58eb-604e-4d06-91a4-9a0d6e65626b"
+      },
+      "properties": {
+        "codexSecuritySchemaVersion": "1.0",
+        "codexSecurityTargetKind": "git_revision"
+      },
+      "results": [
+        {
+          "level": "note",
+          "locations": [
+            {
+              "message": {
+                "text": "root_control"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/BaseLSTAccumulator.sol"
+                },
+                "region": {
+                  "endLine": 152,
+                  "startLine": 152
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "`setStakeAsset(false)` is the management-controlled switch that disables automatic staking in `_deployFunds`, but keeper-triggered report and tend callbacks still call `_stake` without the same guard. A keeper can therefore move idle WETH into stETH or the downstream vault after management disables staking, crossing the intended management risk-control boundary."
+          },
+          "partialFingerprints": {
+            "codexSecurity/v1": "codex-security/v1:sha256:7679f86e55eb49dfd87695e77c5d0539b355e33bd5af00308ec046874fdd1cf2",
+            "primaryLocationLineHash": "db6fc2a8da154e34:1"
+          },
+          "properties": {
+            "category": "Privilege boundary bypass / operational control bypass",
+            "confidence": "high",
+            "findingId": "csf_aade44b3010a30d567b45109",
+            "occurrenceId": "occ_560fa93d9980fa90073a84f1",
+            "severity": "low"
+          },
+          "relatedLocations": [
+            {
+              "id": 1,
+              "message": {
+                "text": "second_entrypoint"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/BaseLSTAccumulator.sol"
+                },
+                "region": {
+                  "endLine": 166,
+                  "startLine": 165
+                }
+              }
+            },
+            {
+              "id": 2,
+              "message": {
+                "text": "management_control"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/BaseLSTAccumulator.sol"
+                },
+                "region": {
+                  "endLine": 206,
+                  "startLine": 203
+                }
+              }
+            }
+          ],
+          "ruleId": "web3.strategy.keeper-risk-control-bypass",
+          "ruleIndex": 1
+        },
+        {
+          "level": "warning",
+          "locations": [
+            {
+              "message": {
+                "text": "root_control"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/Strategy4626.sol"
+                },
+                "region": {
+                  "endLine": 41,
+                  "startLine": 41
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "`Strategy4626._stake` wraps any loose stETH and deposits the strategy's entire loose wstETH balance into the downstream ERC4626 vault. `availableDepositLimit` consults `vault.maxDeposit(address(this))`, but that cap is applied only to new WETH intake, not to the actual loose wstETH amount sent to `vault.deposit`. An unauthenticated token donor can therefore make the next report, tend, deposit deployment, or manual stake revert when the downstream vault has little or no remaining deposit capacity."
+          },
+          "partialFingerprints": {
+            "codexSecurity/v1": "codex-security/v1:sha256:960bad4f874d4b4ff33ac078b7d61d7187a3b878ec0d4516ce7fb04c569b6421",
+            "primaryLocationLineHash": "3191c2d9323007b7:1"
+          },
+          "properties": {
+            "category": "Donation griefing / ERC4626 limit bypass",
+            "confidence": "high",
+            "findingId": "csf_7dc94802bf292fbeefd70a6f",
+            "occurrenceId": "occ_d3135feb626b8fd205bc13f0",
+            "severity": "medium"
+          },
+          "relatedLocations": [
+            {
+              "id": 1,
+              "message": {
+                "text": "incomplete_limit_check"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/Strategy4626.sol"
+                },
+                "region": {
+                  "endLine": 63,
+                  "startLine": 55
+                }
+              }
+            },
+            {
+              "id": 2,
+              "message": {
+                "text": "keeper_report_entrypoint"
+              },
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "src/BaseLSTAccumulator.sol"
+                },
+                "region": {
+                  "endLine": 153,
+                  "startLine": 146
+                }
+              }
+            }
+          ],
+          "ruleId": "web3.erc4626.donation-maxdeposit-dos",
+          "ruleIndex": 0
+        }
+      ],
+      "tool": {
+        "driver": {
+          "name": "Codex Security",
+          "rules": [
+            {
+              "id": "web3.erc4626.donation-maxdeposit-dos",
+              "name": "web3.erc4626.donation-maxdeposit-dos",
+              "properties": {
+                "tags": [
+                  "security"
+                ]
+              },
+              "shortDescription": {
+                "text": "web3.erc4626.donation-maxdeposit-dos"
+              }
+            },
+            {
+              "id": "web3.strategy.keeper-risk-control-bypass",
+              "name": "web3.strategy.keeper-risk-control-bypass",
+              "properties": {
+                "tags": [
+                  "security"
+                ]
+              },
+              "shortDescription": {
+                "text": "web3.strategy.keeper-risk-control-bypass"
+              }
+            }
+          ],
+          "version": "0.1.10"
+        }
+      },
+      "versionControlProvenance": [
+        {
+          "repositoryUri": "https://github.com/dudesahn/steth-accumulator-strategy.git",
+          "revisionId": "521fff28ad978a37115be8995a1d631611fa1d3d"
+        }
+      ]
+    }
+  ],
+  "version": "2.1.0"
+}

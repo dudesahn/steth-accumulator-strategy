@@ -1,0 +1,164 @@
+{
+  "completeness": "complete",
+  "deferred": [],
+  "documentType": "codex-security.coverage",
+  "excludePaths": [
+    "src/test/**",
+    "test/**",
+    "mocks/**",
+    "lib/**",
+    "out/**",
+    "cache/**",
+    "broadcast/**",
+    ".audit/**",
+    "x-ray/**",
+    "scanner reports",
+    "cached analysis"
+  ],
+  "explicitExclusions": [
+    {
+      "pattern": "src/test/**, test/**, mocks/**",
+      "reason": "Tests and mocks were excluded as scan input; targeted tests were used only for validation."
+    },
+    {
+      "pattern": "lib/**",
+      "reason": "Vendored dependencies were excluded except when directly relied on for API semantics."
+    },
+    {
+      "pattern": "out/**, cache/**, broadcast/**",
+      "reason": "Build artifacts and cached Foundry output were excluded."
+    },
+    {
+      "pattern": ".audit/**, x-ray/**, scanner reports, cached analysis",
+      "reason": "Prior audit artifacts and scanner output were excluded from scan input."
+    }
+  ],
+  "includePaths": [
+    "src/BaseLSTAccumulator.sol",
+    "src/Strategy.sol",
+    "src/Strategy4626.sol",
+    "src/Strategy4626Factory.sol",
+    "src/periphery/StrategyAprOracle.sol",
+    "src/interfaces/IBaseLSTAccumulator.sol",
+    "src/interfaces/IStrategyInterface.sol",
+    "src/interfaces/IStrategy4626Interface.sol",
+    "src/interfaces/ICurve.sol",
+    "src/interfaces/IQueue.sol",
+    "src/interfaces/ISTETH.sol",
+    "src/interfaces/IWETH.sol",
+    "src/interfaces/IWstETH.sol",
+    "script/Deploy.s.sol",
+    "script/Deploy4626.s.sol",
+    "script/Deploy4626Factory.s.sol"
+  ],
+  "inventoryStrategy": "custom",
+  "mode": "repository",
+  "openQuestions": [
+    {
+      "followUpPrompt": "Review the external deployment or registry transaction for `src/periphery/StrategyAprOracle.sol` and determine whether constant `aprAfterDebtChange` can influence debt allocation.",
+      "question": "If `StrategyAprOracle` is intended for production registration outside this repository, it needs a targeted oracle-consumer review."
+    }
+  ],
+  "scanId": "351c58eb-604e-4d06-91a4-9a0d6e65626b",
+  "schemaVersion": "1.0",
+  "surfaces": [
+    {
+      "disposition": "reported",
+      "id": "surface-strategy4626-erc4626",
+      "label": "Strategy4626 ERC4626 integration",
+      "notes": "Loose stETH/wstETH donation can make `_stake` exceed live downstream `maxDeposit`; final finding CS-351C58EB-003.",
+      "receiptRefs": [
+        "artifacts/03_coverage/repository_coverage_ledger.md",
+        "artifacts/05_findings/CS-351C58EB-003/candidate_ledger.jsonl",
+        "artifacts/05_findings/CS-351C58EB-003/validation_report.md",
+        "artifacts/05_findings/CS-351C58EB-003/attack_path_analysis_report.md"
+      ],
+      "riskArea": "Token-flow and downstream vault capacity"
+    },
+    {
+      "disposition": "reported",
+      "id": "surface-baselstaccumulator-stakeasset",
+      "label": "BaseLSTAccumulator staking control",
+      "notes": "Keeper report and tend paths bypass the management `stakeAsset` switch; final finding CS-351C58EB-002.",
+      "receiptRefs": [
+        "artifacts/03_coverage/repository_coverage_ledger.md",
+        "artifacts/05_findings/CS-351C58EB-002/candidate_ledger.jsonl",
+        "artifacts/05_findings/CS-351C58EB-002/validation_report.md",
+        "artifacts/05_findings/CS-351C58EB-002/attack_path_analysis_report.md"
+      ],
+      "riskArea": "Keeper versus management trust boundary"
+    },
+    {
+      "disposition": "rejected",
+      "id": "surface-lido-queue-claim-data",
+      "label": "Lido withdrawal queue initiation and claim data",
+      "notes": "ABI mismatch is validated, but final policy suppressed it because the path is management/keeper workflow-only and existing tests use the safe scalar re-encoding.",
+      "receiptRefs": [
+        "artifacts/03_coverage/repository_coverage_ledger.md",
+        "artifacts/05_findings/CS-351C58EB-001/candidate_ledger.jsonl",
+        "artifacts/05_findings/CS-351C58EB-001/validation_report.md",
+        "artifacts/05_findings/CS-351C58EB-001/attack_path_analysis_report.md"
+      ],
+      "riskArea": "Asynchronous redemption accounting"
+    },
+    {
+      "disposition": "rejected",
+      "id": "surface-deployment-scripts",
+      "label": "Deployment scripts and factory role setup",
+      "notes": "`Deploy4626.s.sol` omits direct post-deploy role setup, but the precondition is trusted deployer misuse; factory and non-4626 deploy paths apply setup.",
+      "receiptRefs": [
+        "artifacts/03_coverage/repository_coverage_ledger.md",
+        "artifacts/05_findings/CS-351C58EB-004/candidate_ledger.jsonl",
+        "artifacts/05_findings/CS-351C58EB-004/validation_report.md",
+        "artifacts/05_findings/CS-351C58EB-004/attack_path_analysis_report.md",
+        "artifacts/02_discovery/worker_outputs/shard_06_deploy.md"
+      ],
+      "riskArea": "Deployment role configuration"
+    },
+    {
+      "disposition": "rejected",
+      "id": "surface-apr-oracle",
+      "label": "StrategyAprOracle APR output",
+      "notes": "Constant 4 percent APR behavior is confirmed, but no production deploy or registration path was found and the constructor labels it an example oracle.",
+      "receiptRefs": [
+        "artifacts/03_coverage/repository_coverage_ledger.md",
+        "artifacts/05_findings/CS-351C58EB-005/candidate_ledger.jsonl",
+        "artifacts/05_findings/CS-351C58EB-005/validation_report.md",
+        "artifacts/05_findings/CS-351C58EB-005/attack_path_analysis_report.md"
+      ],
+      "riskArea": "Allocator signal integrity"
+    },
+    {
+      "disposition": "no_issue_found",
+      "id": "surface-factory",
+      "label": "Strategy4626Factory deployment uniqueness and role propagation",
+      "notes": "One strategy per vault mapping, role propagation, and management-gated address updates were reviewed with no surviving issue.",
+      "receiptRefs": [
+        "artifacts/03_coverage/repository_coverage_ledger.md",
+        "artifacts/02_discovery/worker_outputs/shard_03_4626_factory.md"
+      ],
+      "riskArea": "Factory deployment provenance"
+    },
+    {
+      "disposition": "no_issue_found",
+      "id": "surface-curve-lido-swap",
+      "label": "Curve, Lido staking, and stETH-to-WETH swap routes",
+      "notes": "Curve staking path uses a 1:1 minimum when selected, manual unwind slippage is caller-controlled, and no untrusted forced unwind path survived.",
+      "receiptRefs": [
+        "artifacts/03_coverage/repository_coverage_ledger.md",
+        "artifacts/02_discovery/worker_outputs/shard_02_strategy.md"
+      ],
+      "riskArea": "External protocol routing and slippage"
+    },
+    {
+      "disposition": "not_applicable",
+      "id": "surface-nonapplicable-web-families",
+      "label": "RCE, injection, deserialization, SSRF, file, and web sink families",
+      "notes": "The production Solidity/deploy surface exposes no process, query, parser, filesystem, HTTP, redirect, template, upload, or deserialization sinks.",
+      "receiptRefs": [
+        "artifacts/03_coverage/repository_coverage_ledger.md"
+      ],
+      "riskArea": "Generic application security sink classes"
+    }
+  ]
+}

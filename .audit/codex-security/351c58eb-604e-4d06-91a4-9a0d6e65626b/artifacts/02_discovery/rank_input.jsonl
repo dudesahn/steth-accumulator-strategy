@@ -1,0 +1,16 @@
+{"path":"src/BaseLSTAccumulator.sol","area":"src","preview":"Abstract Yearn V3 LST accumulator base: deposit limits, allowlist, staking/tending, report accounting, pending redemptions, manual swaps, and emergency withdrawal hooks."}
+{"path":"src/Strategy.sol","area":"src","preview":"stETH-specific strategy implementation: WETH unwrap, Curve/Lido staking route selection, stETH-to-WETH swap, Lido withdrawal queue request/claim, referral, and emergency batch claims."}
+{"path":"src/Strategy4626.sol","area":"src","preview":"ERC4626 variant around stETH/wstETH: wraps stETH, deposits into downstream vault, frees stETH through redeem/unwrap, overrides value and deposit-limit logic, and exposes emergency redeem/unwrap helpers."}
+{"path":"src/Strategy4626Factory.sol","area":"src","preview":"Factory for Strategy4626 deployments: stores role defaults, deploys one strategy per vault, applies initial Yearn TokenizedStrategy setters, and tracks deployment mapping."}
+{"path":"src/periphery/StrategyAprOracle.sol","area":"src/periphery","preview":"Periphery APR oracle implementation returning a static stETH APR estimate for strategy debt allocation consumers."}
+{"path":"src/interfaces/IBaseLSTAccumulator.sol","area":"src/interfaces","preview":"External interface for BaseLSTAccumulator views, management setters, manual operations, withdrawal queue operations, and pending redemption state."}
+{"path":"src/interfaces/IStrategyInterface.sol","area":"src/interfaces","preview":"Strategy interface extending the base accumulator interface with stETH referral and manual withdrawal-claim helper."}
+{"path":"src/interfaces/IStrategy4626Interface.sol","area":"src/interfaces","preview":"Strategy4626 interface exposing downstream ERC4626 vault, wstETH, wrapped balances, and emergency redeem/unwrap helpers."}
+{"path":"src/interfaces/ICurve.sol","area":"src/interfaces","preview":"Minimal Curve stETH/ETH pool interface for get_dy and exchange calls used by the strategy staking and unwind paths."}
+{"path":"src/interfaces/IQueue.sol","area":"src/interfaces","preview":"Minimal Lido withdrawal queue interface for request and claim paths used by stETH redemption logic."}
+{"path":"src/interfaces/ISTETH.sol","area":"src/interfaces","preview":"Minimal stETH interface for submit and staking-paused checks used by direct Lido staking and deposit-limit logic."}
+{"path":"src/interfaces/IWETH.sol","area":"src/interfaces","preview":"Minimal WETH interface for deposit and withdraw used when converting between WETH accounting asset and native ETH."}
+{"path":"src/interfaces/IWstETH.sol","area":"src/interfaces","preview":"Minimal wstETH interface for wrap, unwrap, conversion, and ERC20 interactions used by Strategy4626."}
+{"path":"script/Deploy.s.sol","area":"script","preview":"Direct Strategy deployment script with WETH, management, keeper, emergency admin, fee recipient, and post-deploy role setter calls."}
+{"path":"script/Deploy4626.s.sol","area":"script","preview":"Direct Strategy4626 deployment script with WETH, vault, name, and logged management address."}
+{"path":"script/Deploy4626Factory.s.sol","area":"script","preview":"Strategy4626Factory deployment script with role defaults and WETH asset constant."}

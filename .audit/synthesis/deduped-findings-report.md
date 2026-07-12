@@ -1,0 +1,551 @@
+# Deduplicated Security Findings
+
+## Synthesis Scope
+
+This report consolidates the committed tool outputs under `.audit/` on `review` and the two 5.6 Sol model-run bundles committed on `review-sol-update` into canonical finding families. It is a synthesis of prior evidence, not a new audit pass.
+
+- Baseline production snapshot: `521fff28ad978a37115be8995a1d631611fa1d3d` on `review`
+- 5.6 Sol run snapshot: `4580174c60ccac4658d97b02f0951aec92b218b2` on `review-sol-update`
+- Branch relationship: `4580174c...` descends from `521fff28...` through two source-changing commits
+- Audit-artifact branch head: `2539bb003278f4c663f76b8246ab97053f2b84c1`; no production source changes occur between `4580174c...` and that branch head
+- Repository `HEAD` at synthesis start: `36ea599e4fde66f6d7b04318041b9d192683dbbc`; its production source still matches the baseline snapshot
+- Scope: first-party production contracts, interfaces, and relevant deployment scripts covered by the committed tool runs
+- Excluded from independent vote counts: x-ray orientation, duplicated Nemesis subpass summaries, raw candidates rejected by a tool's own finalizer, and generated PoC/build artifacts
+
+The committed evidence sources are:
+
+| Source | Canonical input | Final output shape |
+| --- | --- | --- |
+| Codex Security | `.audit/codex-security/351c58eb-604e-4d06-91a4-9a0d6e65626b/report.md` and `findings.json` | 2 final report findings; candidate validation artifacts retained separately |
+| dot-context | `.audit/dot-context/outputs/1/audit-report.md` and `findings.json` | 4 Medium and 2 Low findings |
+| Human Pages | `.audit/human-pages/findings.md`, `findings.jsonl`, and `poc_results.md` | 2 validated, 3 conditional, plus downgraded and rejected notes |
+| Nemesis | `.audit/findings/nemesis-verified.md` | 3 verified Low findings; Feynman and state-inconsistency files are subpasses of the same run |
+| x-ray + solidity-auditor | `.audit/solidity-auditor-521fff2/validated-findings-and-leads.md` | 3 validated findings and 5 validated leads; x-ray is orientation only |
+| 5.6 Sol Codex Security run | `review-sol-update@2539bb0:.audit/codex-security/b28ae933-e033-4054-aabb-a11a84937880/report.md` and `findings.json` | 9 final findings against `4580174c...` |
+| 5.6 Sol solidity-auditor run | `review-sol-update@2539bb0:.audit/pashov-4580174-20260710T112356Z/synthesis/validated-findings-and-leads.md` | 9 validated findings and 11 validated or conditional leads against `4580174c...`; x-ray remained orientation only |
+
+Final and verified outputs take precedence over raw agent notes. A source-traced disagreement is retained in the canonical finding instead of being hidden by a simple vote count.
+
+## Executive Summary
+
+No Critical or High finding was reported by the committed tool runs.
+
+Counts and table severities use the highest reconciled severity applicable to either reviewed snapshot. Version-specific downgrades and fixes are stated in each finding.
+
+The synthesis yields:
+
+- 4 confirmed Medium findings
+- 2 confirmed but deployment-conditional Medium findings
+- 9 Low findings or operational weaknesses
+- 2 conditional trust-boundary or informational findings
+
+| ID | Severity | Status | Applicability | Canonical finding |
+| --- | --- | --- | --- | --- |
+| DF-01 | Medium | Confirmed | Both snapshots | Loss-producing unwinds expose WETH before share accounting records the loss |
+| DF-02 | Medium | Confirmed | Both snapshots | Report and tend can re-stake shutdown liquidity or bypass the staking disable state |
+| DF-03 | Medium | Confirmed | Both snapshots | Strategy4626 deposits its full loose wstETH balance without enforcing live vault capacity |
+| DF-04 | Medium | Confirmed, conditional | Both snapshots | Zero profit locking allows pre-report deposits to capture accrued yield |
+| DF-05 | Low | Confirmed | Both snapshots | Pending Lido redemptions are omitted from deposit-limit accounting |
+| DF-06 | Low | Confirmed | Both snapshots | Lido withdrawal initiation and claim use incompatible ABI shapes |
+| DF-07 | Low | Confirmed operational weakness | Baseline only; fixed at `4580174c...` | Strategy4626 emergency withdrawal does not unwind its normal vault-held position |
+| DF-08 | Low | Confirmed configuration footgun | Baseline only; fixed at `4580174c...` | `reportBuffer > MAX_BPS` underflows valuation and report paths |
+| DF-09 | Low | Deployment-conditional | Both snapshots | StrategyAprOracle returns a constant APR independent of strategy state and debt delta |
+| DF-10 | Conditional | Trust boundary | Both snapshots | Strategy4626 fully trusts the selected ERC4626 vault without local output or NAV guards |
+| DF-11 | Informational | Operational | Both snapshots | Permissionless factory deployment can populate one-shot registry state for unreviewed vaults |
+| DF-12 | Medium | Confirmed | Both snapshots | A small accepted deposit can redeploy WETH prepared for existing-holder withdrawals |
+| DF-13 | Medium | Confirmed, conditional | Both snapshots with a fee-bearing vault | Fee-exclusive nested-vault valuation can overstate realizable assets |
+| DF-14 | Low | Confirmed operational weakness | `4580174c...` snapshot only | The exact-peg emergency minimum can block separated-role recovery |
+| DF-15 | Low | Confirmed configuration footgun | Both snapshots | Restoring the report buffer can mint fee shares without an economic gain |
+| DF-16 | Low | Confirmed, market-conditional | Both snapshots | Queue accounting mixes nominal request value with actual claim proceeds |
+| DF-17 | Low | Confirmed operational weakness | `4580174c...` snapshot only | The Strategy4626 unwind helper is not amount-safe across edge states |
+
+## Confirmed and Reportable Findings
+
+### DF-01: Loss-producing unwinds expose WETH before share accounting records the loss
+
+- Severity: Medium
+- Confidence: High
+- Status: Confirmed by executable PoC and independent source trace
+
+`manualSwapToAsset()` and the emergency unwind path can convert stETH-side value into less WETH than the previously recorded nominal value. The resulting WETH immediately increases `availableWithdrawLimit()`, while TokenizedStrategy's stored `totalAssets` and share price remain unchanged until the next report. A user who redeems in that interval receives value using stale pre-loss pricing and shifts a disproportionate share of the loss to remaining shareholders.
+
+The path requires management or emergency-role action to create the WETH and a user withdrawal before the loss-recording report. The privileged first step reduces likelihood but does not remove the permissionless loss-shifting exit once liquid WETH is exposed.
+
+Affected paths:
+
+- `src/BaseLSTAccumulator.sol`: `availableWithdrawLimit`, `_harvestAndReport`, `_emergencyWithdraw`, `manualSwapToAsset`
+- `src/Strategy.sol`: LST-to-WETH swap implementation
+- inherited TokenizedStrategy withdrawal accounting
+
+Provenance:
+
+- dot-context `M-02` — Medium, PoC-backed
+- solidity-auditor `F-01` — Medium, validated trace
+- Human Pages downgraded note, "Management manual swaps can create stale-accounting withdrawal windows" — same mechanics, calibrated as trusted sequencing risk
+
+Recommended remediation:
+
+- Prevent newly unwound WETH from increasing the withdrawal limit until accounting is refreshed.
+- Prefer an atomic unwind-and-report operation, or set a stale-accounting flag cleared only by a successful report.
+- Require bounded slippage for emergency conversions where operationally possible.
+
+### DF-02: Report and tend can re-stake shutdown liquidity or bypass the staking disable state
+
+- Severity: Medium
+- Confidence: High
+- Status: Confirmed for the shutdown path; flag-only variant has intent ambiguity
+
+TokenizedStrategy permits reporting and tending after shutdown. `_harvestAndReport()` and `_tend()` can still call `_stake()` without checking shutdown. As a result, WETH freed for emergency withdrawals can be converted back to stETH or downstream-vault exposure, reducing user `maxRedeem` and undoing incident recovery.
+
+The same call sites also ignore `stakeAsset == false`. Codex Security treated that as a Low management-versus-keeper control bypass, while the solidity-auditor and Nemesis runs observed that an existing test explicitly expects report-time staking with the flag disabled. The synthesis therefore treats shutdown re-staking as the reportable Medium issue and retains the flag-only behavior as an intent/documentation variant, not a separate finding.
+
+Both 5.6 Sol runs calibrated the shutdown report/tend variants as Low because the trigger is keeper-gated. The synthesis retains Medium as the highest applicable severity because the baseline PoCs demonstrate that the action can reverse emergency recovery and remove immediately withdrawable liquidity.
+
+Affected paths:
+
+- `src/BaseLSTAccumulator.sol`: `_harvestAndReport`, `_tend`, `setStakeAsset`
+- `src/Strategy.sol` and `src/Strategy4626.sol`: staking implementations
+- inherited TokenizedStrategy shutdown/report/tend behavior
+
+Provenance:
+
+- dot-context `M-03` — Medium, PoC-backed
+- Human Pages `HP-M-01` — Medium, PoC-backed
+- Codex Security `csf_aade44b3010a30d567b45109` — Low, focused fork-test confirmation of the `stakeAsset` variant
+- solidity-auditor demoted trail, "stakeAsset not honored by report/tend" — treated as intended when isolated from shutdown
+- 5.6 Sol Codex Security `csf_d9b4fe4044f8f96d22efd58a` and `csf_c5a9e2a967e22583d8780558` — separate report and tend findings, both Low due keeper gating
+- 5.6 Sol solidity-auditor `VL-02` — conditional lead due the same trusted-role precondition
+
+Recommended remediation:
+
+- Skip `_stake()` from report when shutdown.
+- Make tend a no-op or revert when shutdown.
+- Clarify whether `stakeAsset` is deposit-only; otherwise apply it consistently or introduce a separate explicit maintenance-staking switch.
+
+### DF-03: Strategy4626 deposits its full loose wstETH balance without enforcing live vault capacity
+
+- Severity: Medium
+- Confidence: High for the donation path; Medium for capacity variants
+- Status: Confirmed by disposable PoC and independent trace
+
+`Strategy4626._stake()` wraps loose stETH and then deposits the strategy's entire loose wstETH balance into the downstream ERC4626 vault. `availableDepositLimit()` checks `vault.maxDeposit(address(this))` only when calculating new WETH intake; the actual `vault.deposit()` sink is not capped by the vault's current remaining capacity.
+
+An unauthenticated account can donate wstETH to the strategy. If the downstream vault has little or no capacity, a later report, tend, user deposit deployment, or manual stake attempts to deposit the donated balance and reverts. Related variants arise when pre-existing loose WETH is swept with a new deposit or a favorable Curve fill produces more wstETH than the precomputed limit anticipated.
+
+The 5.6 Sol runs calibrated these availability paths as Low, while the baseline Codex Security and solidity-auditor runs rated the permissionless donation path Medium. The table retains Medium as the highest applicable rating and records the 5.6 Sol calibration here.
+
+Affected paths:
+
+- `src/Strategy4626.sol`: `_stake`, `availableDepositLimit`
+- `src/BaseLSTAccumulator.sol`: `_harvestAndReport`, deposit-limit plumbing
+- inherited TokenizedStrategy deposit sweep of loose WETH
+
+Provenance:
+
+- Codex Security `csf_7dc94802bf292fbeefd70a6f` — Medium, disposable Foundry PoC
+- solidity-auditor `F-03` — Medium, validated forced-wstETH path
+- solidity-auditor `L-02` — favorable-fill capacity variant
+- Human Pages `HP-C-01` — pre-existing loose-WETH capacity variant
+- 5.6 Sol Codex Security `csf_5236c2f55c0be4d5a012af25` — live-cap overshoot after route surplus or balance aggregation
+- 5.6 Sol Codex Security `csf_2908870927c06eae78c8a5a4` — amount-scoped staking sweeps unrelated loose balances
+- 5.6 Sol solidity-auditor `VF-03` and `VL-03` — final-deposit and direct-tend capacity variants
+
+Recommended remediation:
+
+- Immediately before `vault.deposit`, read `vault.maxDeposit(address(this))` and cap the actual wstETH amount.
+- Skip the vault deposit when capacity is zero and leave surplus wstETH loose and accounted.
+- Subtract already-loose deployable balances from intake limits, or deploy only the amount attributable to the current deposit.
+
+### DF-04: Zero profit locking allows pre-report deposits to capture accrued yield
+
+- Severity: Medium when deposits are open and unreported gains are material
+- Confidence: High on mechanics; Medium on deployment likelihood
+- Status: Confirmed mechanism with deployment conditions
+
+`Strategy4626Factory.newStrategy4626()` sets `profitMaxUnlockTime` to zero. Deposits mint shares against the last reported accounting value. A depositor who enters immediately before a predictable positive report receives shares before accrued stETH or vault yield is recognized, then participates in the entire immediate PPS increase. Existing holders are diluted by yield that accrued before the new deposit.
+
+The extraction requires open deposits, material unreported gains, and timing around a report. Those conditions should be confirmed for each deployment before final severity is fixed.
+
+Affected paths:
+
+- `src/Strategy4626Factory.sol`: `newStrategy4626`
+- `src/BaseLSTAccumulator.sol`: report accounting
+- `src/Strategy4626.sol`: vault-value reporting
+- inherited TokenizedStrategy deposit and profit-locking logic
+
+Provenance:
+
+- dot-context `M-01` — Medium, PoC-backed
+- Human Pages `HP-C-02` — conditional Medium, source-traced
+
+Recommended remediation:
+
+- Preserve a non-zero profit-unlock period by default.
+- If zero unlock is intentional, close deposits around material reports or report immediately before reopening deposits.
+
+## Confirmed Queue-Cap Finding
+
+### DF-05: Pending Lido redemptions are omitted from deposit-limit accounting
+
+- Severity: Low
+- Confidence: High
+- Status: Confirmed by both 5.6 Sol runs against `4580174c...`, including a temporary lifecycle check
+
+`estimatedTotalAssets()` counts loose WETH and directly held LST value but not `pendingRedemptions`. Initiating a Lido withdrawal transfers stETH out and increments the scalar pending amount. Until the request is claimed, the strategy can appear to have unused capacity even though the queued value remains economically attributable to it. New deposits can fill that temporary apparent headroom and cause total exposure to exceed the configured `depositLimit` after the queued withdrawal is claimed.
+
+Provenance:
+
+- baseline solidity-auditor `F-02` — Low/Medium, validated source trace
+- 5.6 Sol Codex Security `csf_7f9d7622a90752f126134dd1` — Low, final report finding
+- 5.6 Sol solidity-auditor `VF-08` — Low; a temporary lifecycle check filled a 100 WETH cap, queued the full LST balance, observed reopened room, refilled it, and confirmed held-plus-pending exposure above the cap
+
+Recommended remediation:
+
+- Include `pendingRedemptions` in cap-side asset accounting, or return zero deposit capacity while a redemption is pending.
+
+## Low-Severity Findings and Operational Weaknesses
+
+### DF-06: Lido withdrawal initiation and claim use incompatible ABI shapes
+
+- Severity: Low
+- Confidence: High
+- Status: Confirmed by PoC and multiple independent traces
+
+The initiation path returns `abi.encode(uint256[] requestIds)`, while the claim path decodes the supplied bytes as a scalar `uint256`. Passing the initiation bytes directly to claim decodes the dynamic-array offset `0x20` as request id `32`. The current tests and a knowledgeable keeper can work around the mismatch by decoding the array and re-encoding its first element, but the natural bytes handoff is not round-trippable. A failed handoff leaves `pendingRedemptions` nonzero and blocks reports until corrected.
+
+Provenance:
+
+- dot-context `L-01`
+- Human Pages `HP-M-02` — PoC-backed Medium before synthesis calibration
+- Nemesis `NEM-002`
+- solidity-auditor `L-01`
+- Codex Security candidate `CS-351C58EB-001` — validation summary marked reportable, but it was not included in the final `findings.json`
+- 5.6 Sol solidity-auditor `VF-02` — direct-replay validation and ABI checks
+
+Severity reconciliation: Low is retained because the path is privileged and operators can transform the data or use emergency/manual recovery. The interface mismatch itself is fully demonstrated.
+
+Recommended remediation:
+
+- Return scalar-encoded claim data when only one request is supported, or make both sides use a typed `uint256[]` shape.
+- Add a regression test that passes initiation return data directly to the claim function.
+
+### DF-07: Strategy4626 emergency withdrawal does not unwind its normal vault-held position
+
+- Severity: Low
+- Confidence: High on mechanics
+- Status: Confirmed operational weakness; downgraded because manual recovery exists
+
+The inherited emergency withdrawal path only checks directly held stETH. A normal Strategy4626 position is primarily held as downstream ERC4626 shares or loose wstETH, so the standard callback can complete without materially freeing the deployed position. Emergency-authorized operators can still call `manualRedeem()` and `manualUnwrap()` before swapping, making this a multi-step runbook hazard rather than an unrecoverable fund lock.
+
+Provenance:
+
+- dot-context `M-04` — PoC-backed Medium
+- Human Pages downgraded note, "Strategy4626 emergencyWithdraw only handles loose stETH/dust" — PoC-backed Low operational note
+- solidity-auditor `L-03`
+
+Severity reconciliation: the PoC confirms the standard emergency callback is ineffective, but explicit manual recovery helpers materially reduce impact and justify Low unless deployment runbooks assume a one-call unwind.
+
+Version note: `4580174c...` adds a Strategy4626 emergency-withdraw override, fixing this exact baseline defect. Distinct edge cases in the replacement helper are tracked as DF-17.
+
+Recommended remediation:
+
+- Override Strategy4626 emergency withdrawal to redeem and unwrap enough vault-held value before invoking the base swap, or formally document and test the required manual sequence.
+
+### DF-08: `reportBuffer > MAX_BPS` underflows valuation and report paths
+
+- Severity: Low
+- Confidence: High
+- Status: Confirmed management configuration footgun
+
+`setReportBuffer()` accepts any `uint256`, but `estimatedTotalAssets()` calculates `MAX_BPS - reportBuffer`. Values above 10,000 revert under Solidity checked arithmetic and can break valuation, deposit-limit, and report calls until management corrects the setting.
+
+Provenance:
+
+- Nemesis `NEM-001`
+- solidity-auditor `L-05`
+- Human Pages factory/configuration downgraded note
+
+Version note: `4580174c...` adds `require(_reportBuffer <= MAX_BPS)`, fixing this exact underflow footgun on `review-sol-update`.
+
+Recommended remediation:
+
+- Require `reportBuffer <= MAX_BPS`, with a tighter maximum if only small valuation discounts are intended.
+
+### DF-09: StrategyAprOracle returns a constant APR independent of strategy state and debt delta
+
+- Severity: Low if deployed in allocation infrastructure; otherwise Informational
+- Confidence: High on implementation, Medium-Low on integration impact
+- Status: Deployment-conditional
+
+`aprAfterDebtChange(address,int256)` ignores both inputs and always returns `4e16`. If used by production allocation tooling, it can advertise a positive 4% APR for shutdown, capacity-constrained, or unsupported strategies and for arbitrary debt deltas. No in-repo value-moving consumer or confirmed production registration was identified.
+
+Provenance:
+
+- dot-context `L-02`
+- Nemesis `NEM-003`
+- solidity-auditor demoted trail, "Fixed StrategyAprOracle APR"
+- Codex Security candidate `CS-351C58EB-005` — deferred because production registration was not established
+- 5.6 Sol solidity-auditor `VF-07` — Low at confidence 75 after repository-consumer searches found no local allocator integration
+
+Recommended remediation:
+
+- Mark the oracle as non-production, or implement capacity-, state-, and delta-aware APR behavior with zero returns for unavailable strategies.
+
+## Conditional Trust-Boundary Findings
+
+### DF-10: Strategy4626 fully trusts the selected ERC4626 vault without local output or NAV guards
+
+- Severity: Conditional; Medium for arbitrary or manipulable vaults, Low/Informational for vetted vaults
+- Confidence: Medium-Low
+- Status: Trust boundary, not proven against a configured production vault
+
+Strategy4626 verifies that the downstream vault's asset is wstETH but otherwise trusts `deposit`, `convertToAssets`, `previewWithdraw`, `maxRedeem`, and `redeem`. The deposit path ignores returned shares and has no local minimum-share check. A malicious or non-standard selected vault could donate principal, distort reported NAV, or block exits.
+
+Provenance:
+
+- Human Pages `HP-C-03`
+- 5.6 Sol solidity-auditor `VL-08` and `VL-11` — zero-share and arbitrary-vault variants
+
+Recommended remediation:
+
+- Restrict deployment to reviewed vaults or per-vault adapters.
+- Check returned shares against a minimum and test zero-share deposits, manipulated NAV, and zero-redeem-capacity behavior.
+
+### DF-11: Permissionless factory deployment can populate one-shot registry state for unreviewed vaults
+
+- Severity: Informational
+- Confidence: High on behavior, Low on security impact
+- Status: Operational and indexing risk
+
+Anyone can call `newStrategy4626()` for a vault whose asset is wstETH. The caller does not gain strategy privileges, and management must still accept the strategy, but the factory immediately records a single deployment using the current role defaults. Off-chain consumers must not interpret the factory mapping or event as management endorsement of the underlying vault.
+
+Provenance:
+
+- solidity-auditor `L-04`
+- 5.6 Sol solidity-auditor `VL-10` and `VL-11` — stale role-snapshot and arbitrary-vault registry variants
+
+Recommended remediation:
+
+- Add a management allowlist or reservation step, or expose a separate endorsement state that indexers and allocators can distinguish from permissionless creation.
+
+## 5.6 Sol Run Additions
+
+### DF-12: A small accepted deposit can redeploy WETH prepared for existing-holder withdrawals
+
+- Severity: Medium
+- Confidence: High
+- Status: Confirmed with an ordinary-depositor trigger and focused fork test
+
+The inherited deposit path calls the strategy deployment hook with the full post-transfer WETH balance, not only the assets received from the current depositor. `_deployFunds()` forwards that aggregate balance to `_stake()` when staking is enabled. A small open-mode or allowlisted deposit can therefore re-stake a much larger WETH balance that management or a keeper had left liquid for existing-holder withdrawals.
+
+This differs from DF-02 because no post-shutdown keeper action is required. It also differs from DF-03 because the primary impact is consumption of reserved withdrawal liquidity, not downstream-vault capacity failure. The same inherited full-balance callback exists in both reviewed snapshots.
+
+Provenance:
+
+- 5.6 Sol solidity-auditor `VF-01` — Medium at confidence 75; access-control and 256-run withdrawal-limit checks passed
+- 5.6 Sol Codex Security `csf_07fb06eefe8dd302ec047d0d` — Low; focused fork test reproduced a tiny accepted deposit re-staking prepared WETH
+
+Recommended remediation:
+
+- Scope deposit-time deployment to the newly received amount or preserve an explicit idle-liquidity reserve.
+- Add regression tests where a small deposit arrives after WETH has been prepared for withdrawals.
+
+### DF-13: Fee-exclusive nested-vault valuation can overstate realizable assets
+
+- Severity: Medium when a fee-bearing downstream vault is accepted
+- Confidence: High on mechanics; deployment-conditional
+- Status: Confirmed with a fee-bearing harness; not observed for the configured Yearn vault
+
+Strategy4626 values downstream shares using `convertToAssets()` and carries that gross figure into `estimatedTotalAssets()` and report accounting. A standards-compatible vault may charge an exit fee such that realizable redemption proceeds are lower than the ideal conversion value. If such a vault is selected and funded, the strategy can commit overstated shareholder value and only recognize the shortfall during redemption, deferring or shifting the loss.
+
+The configured Yearn vault used by the solidity-auditor checks returned equal `convertToAssets` and `previewRedeem` values at the pinned block. The Codex Security harness independently reproduced a 100-to-90 fee gap, report commitment, and insufficient-buffer case. This remains conditional on actual vault selection.
+
+Provenance:
+
+- 5.6 Sol Codex Security `csf_46d2a8b0062d1f2a0e5d1795` — Medium, four focused fee-valuation tests
+- 5.6 Sol solidity-auditor `VL-09` — conditional lead because the configured vault was fee-free at the checked block
+
+Recommended remediation:
+
+- Value downstream shares using a fee-aware realizable-redemption preview or a vetted per-vault adapter.
+- Enforce vault-selection invariants and test fee-bearing ERC4626 implementations before deposits are enabled.
+
+### DF-14: The exact-peg emergency minimum can block separated-role recovery
+
+- Severity: Low
+- Confidence: High
+- Status: Confirmed on the `4580174c...` snapshot reviewed by the 5.6 Sol runs
+
+Compared with the baseline snapshot, `4580174c...` uses a minimum derived from `reportBuffer` in `_emergencyWithdraw()`. Because the buffer defaults to zero, the emergency swap initially requires nominal one-for-one stETH output. When Curve quotes below par, a distinct emergency administrator can enter the recovery path but cannot relax the management-only buffer, so recovery reverts until management cooperates or market conditions improve.
+
+This mechanism does not apply to the baseline `521fff28...` snapshot, whose emergency swap uses a zero minimum. It is introduced by the `4580174c...` emergency-slippage change.
+
+Provenance:
+
+- 5.6 Sol Codex Security `csf_2fb78692d339540f18df9133` — Low; focused production-linked harness reproduced failure at 99% output and success after a 100-basis-point buffer
+- 5.6 Sol solidity-auditor `VL-01` — conditional lead due emergency-role gating
+
+Recommended remediation:
+
+- Give the emergency path a separately bounded slippage parameter that the emergency role can use within a management-approved ceiling.
+- Set a non-zero safe default during deployment and test below-peg emergency recovery with separated roles.
+
+### DF-15: Restoring the report buffer can mint fee shares without an economic gain
+
+- Severity: Low
+- Confidence: High
+- Status: Confirmed management configuration footgun
+
+`reportBuffer` directly discounts reported LST value. Raising it records an accounting loss; restoring it later records an apparent profit even when no assets moved. If performance fees are enabled, inherited report accounting can mint fee shares against that synthetic recovery and dilute holders without an economic gain.
+
+The mechanism exists in both snapshots. The bound present at `4580174c...` fixes the out-of-range underflow in DF-08 but still permits management to cycle valid in-range buffer values.
+
+Provenance:
+
+- 5.6 Sol solidity-auditor `VF-09` — Low; a temporary fork check used a 10% performance fee, moved no assets between reports, and observed fee-recipient shares after restoring the buffer
+
+Recommended remediation:
+
+- Treat buffer changes as valuation-policy changes that cannot generate fee-bearing profit.
+- Reset or separately account for the synthetic valuation delta when the buffer changes.
+
+### DF-16: Queue accounting mixes nominal request value with actual claim proceeds
+
+- Severity: Low
+- Confidence: High on accounting mechanics; market-conditional on discounted proceeds
+- Status: Confirmed mechanism with conditional production trigger
+
+Queue initiation adds nominal requested stETH to `pendingRedemptions`, while claim completion subtracts the actual native-asset payout. If actual proceeds are below nominal, a residual remains and blocks report, but the received WETH is immediately exposed through `availableWithdrawLimit()`. A shareholder can redeem using stale pre-loss share pricing and shift part of the queue haircut to remaining holders.
+
+The same aggregate ledger creates adjacent recovery hazards: management can clear pending state before a later principal recovery, a partial manual claim batch can zero the whole aggregate, and later proceeds can be measured as profit. Those variants require additional role actions or health-check changes and remain conditional extensions of the canonical nominal-versus-actual mismatch.
+
+Provenance:
+
+- 5.6 Sol Codex Security `csf_e74ae140bceefd722ddf44dc` — Low; offline model reproduced a 100-for-90 claim and asymmetric holder outcomes
+- 5.6 Sol solidity-auditor `VL-04` and `VL-05` — residual-pending and stale-withdrawal variants
+- 5.6 Sol solidity-auditor `VL-06` and `VL-07` — early-clear and partial-batch conditional variants
+
+Recommended remediation:
+
+- Track each request's nominal amount and settlement status separately from actual proceeds.
+- Reconcile the loss before claim proceeds become withdrawable and prevent aggregate clearing unless every live request is accounted for.
+
+### DF-17: The Strategy4626 unwind helper at `4580174c...` is not amount-safe across edge states
+
+- Severity: Low
+- Confidence: High on source mechanics
+- Status: Confirmed operational weaknesses on the `4580174c...` snapshot reviewed by the 5.6 Sol runs
+
+The `4580174c...` snapshot includes a Strategy4626 emergency override and `_freeStETH()` helper, fixing DF-07 relative to the baseline. That path has three distinct amount-handling defects:
+
+- a large emergency request against mixed loose stETH and wrapped exposure can unwind only part of the wrapped position in one call;
+- when vault redemption room and loose wstETH are both zero, execution still calls production `wstETH.unwrap(0)`, which reverts;
+- for a small shortfall, the helper unwraps the entire loose wstETH balance rather than only the calculated requirement.
+
+These paths are privileged and recoverable, so they remain Low, but they complicate emergency runbooks and make an amount-scoped helper transform more exposure than requested.
+
+Provenance:
+
+- 5.6 Sol solidity-auditor `VF-04` — mixed-balance partial unwind
+- 5.6 Sol solidity-auditor `VF-05` — pinned production call confirmed `unwrap(0)` reverts
+- 5.6 Sol solidity-auditor `VF-06` — full-loose-balance unwrap instead of shortfall
+
+Recommended remediation:
+
+- Compute the total target once across loose stETH, loose wstETH, and redeemable vault shares.
+- Skip zero-amount wrapper calls and unwrap only the exact bounded shortfall.
+- Add mixed-balance, zero-capacity, and excess-loose-balance emergency tests.
+
+## Source-to-Canonical Mapping
+
+| Source item | Canonical result | Synthesis treatment |
+| --- | --- | --- |
+| Codex Security `csf_7dc94802bf292fbeefd70a6f` / candidate `CS-351C58EB-003` | DF-03 | Core confirmed path |
+| Codex Security `csf_aade44b3010a30d567b45109` / candidate `CS-351C58EB-002` | DF-02 | Flag-only variant; shutdown path controls final severity |
+| Codex candidate `CS-351C58EB-001` | DF-06 | Validated candidate absent from final `findings.json` |
+| Codex candidate `CS-351C58EB-004` | Downgraded note | Direct deployment handoff/process issue; not promoted |
+| Codex candidate `CS-351C58EB-005` | DF-09 | Deferred integration-dependent issue |
+| dot-context `M-01` | DF-04 | Core confirmed path |
+| dot-context `M-02` | DF-01 | Core confirmed path |
+| dot-context `M-03` | DF-02 | Core confirmed shutdown path |
+| dot-context `M-04` | DF-07 | Mechanics confirmed; severity reduced |
+| dot-context `L-01` | DF-06 | Corroboration |
+| dot-context `L-02` | DF-09 | Corroboration |
+| Human Pages `HP-M-01` | DF-02 | Core confirmed shutdown path |
+| Human Pages `HP-M-02` | DF-06 | Mechanics confirmed; severity reduced |
+| Human Pages `HP-C-01` | DF-03 | Existing-loose-WETH capacity variant |
+| Human Pages `HP-C-02` | DF-04 | Conditional corroboration |
+| Human Pages `HP-C-03` | DF-10 | Retained as trust boundary |
+| Human Pages manual-swap downgraded note | DF-01 | Severity disagreement retained |
+| Human Pages emergency-withdraw downgraded note | DF-07 | Controls final severity calibration |
+| Human Pages factory/configuration note | DF-08 plus downgraded notes | Buffer issue promoted; zero-address/event concerns not promoted |
+| Human Pages direct-deployment-script note | Downgraded note | Operational handoff issue; not promoted |
+| Nemesis `NEM-001` | DF-08 | Core confirmed path |
+| Nemesis `NEM-002` | DF-06 | Corroboration |
+| Nemesis `NEM-003` | DF-09 | Corroboration |
+| solidity-auditor `F-01` | DF-01 | Core confirmed path |
+| solidity-auditor `F-02` | DF-05 | Baseline discovery, later independently confirmed |
+| solidity-auditor `F-03` | DF-03 | Core confirmed path |
+| solidity-auditor `L-01` | DF-06 | Corroboration |
+| solidity-auditor `L-02` | DF-03 | Favorable-fill capacity variant |
+| solidity-auditor `L-03` | DF-07 | Operational corroboration |
+| solidity-auditor `L-04` | DF-11 | Retained as Informational |
+| solidity-auditor `L-05` | DF-08 | Corroboration |
+| solidity-auditor demoted `stakeAsset` trail | DF-02 | Intent caveat retained |
+| solidity-auditor demoted fixed-APR trail | DF-09 | Integration caveat retained |
+| 5.6 Sol Codex Security `csf_46d2a8b0062d1f2a0e5d1795` | DF-13 | Fee-bearing-vault realization gap |
+| 5.6 Sol Codex Security `csf_d9b4fe4044f8f96d22efd58a` | DF-02 | Post-shutdown report variant |
+| 5.6 Sol Codex Security `csf_c5a9e2a967e22583d8780558` | DF-02 | Post-shutdown tend variant |
+| 5.6 Sol Codex Security `csf_7f9d7622a90752f126134dd1` | DF-05 | Independently confirms queue-cap omission |
+| 5.6 Sol Codex Security `csf_2fb78692d339540f18df9133` | DF-14 | `4580174c...` exact-peg emergency floor |
+| 5.6 Sol Codex Security `csf_07fb06eefe8dd302ec047d0d` | DF-12 | Ordinary deposit re-stakes prepared liquidity |
+| 5.6 Sol Codex Security `csf_5236c2f55c0be4d5a012af25` | DF-03 | Final nested-vault amount exceeds checked capacity |
+| 5.6 Sol Codex Security `csf_2908870927c06eae78c8a5a4` | DF-03 | Amount-scoped staking sweeps ambient balances |
+| 5.6 Sol Codex Security `csf_e74ae140bceefd722ddf44dc` | DF-16 | Discounted claim leaves stale-priced liquidity |
+| 5.6 Sol solidity-auditor `VF-01` | DF-12 | Core ordinary-depositor path |
+| 5.6 Sol solidity-auditor `VF-02` | DF-06 | ABI mismatch corroboration |
+| 5.6 Sol solidity-auditor `VF-03` | DF-03 | Capacity translation and sink mismatch |
+| 5.6 Sol solidity-auditor `VF-04` | DF-17 | Mixed-balance partial unwind |
+| 5.6 Sol solidity-auditor `VF-05` | DF-17 | Zero-amount wrapper revert |
+| 5.6 Sol solidity-auditor `VF-06` | DF-17 | Excess loose-wrapped balance unwrap |
+| 5.6 Sol solidity-auditor `VF-07` | DF-09 | Constant APR corroboration |
+| 5.6 Sol solidity-auditor `VF-08` | DF-05 | Queue-cap lifecycle confirmation |
+| 5.6 Sol solidity-auditor `VF-09` | DF-15 | Synthetic buffer-recovery fees |
+| 5.6 Sol solidity-auditor `VL-01` | DF-14 | Emergency-role liveness variant |
+| 5.6 Sol solidity-auditor `VL-02` | DF-02 | Shutdown maintenance variant |
+| 5.6 Sol solidity-auditor `VL-03` | DF-03 | Direct-tend capacity variant |
+| 5.6 Sol solidity-auditor `VL-04` | DF-16 | Lower-proceeds pending remainder |
+| 5.6 Sol solidity-auditor `VL-05` | DF-16 | Stale-priced claim proceeds |
+| 5.6 Sol solidity-auditor `VL-06` | DF-16 | Early-clear later-recovery accounting variant |
+| 5.6 Sol solidity-auditor `VL-07` | DF-16 | Partial-batch aggregate-clear variant |
+| 5.6 Sol solidity-auditor `VL-08` | DF-10 | Zero-share accepted-vault variant |
+| 5.6 Sol solidity-auditor `VL-09` | DF-13 | Fee-bearing-vault dependency |
+| 5.6 Sol solidity-auditor `VL-10` | DF-11 | Old role-snapshot deployment variant |
+| 5.6 Sol solidity-auditor `VL-11` | DF-10 / DF-11 | Arbitrary-vault trust and registry variant |
+
+Nemesis `FF-*` and `SI-*` identifiers map to `NEM-001` through `NEM-003`; they are internal subpasses and are not counted as independent corroborating tools. X-ray findings and invariants are orientation artifacts and are not used as standalone security findings.
+
+## Downgraded or Rejected Families
+
+The following items remain below the reportable threshold unless deployment facts add impact:
+
+- Factory and `setAddresses()` zero-address validation and missing events: management-only configuration hardening.
+- Direct `Deploy4626.s.sol` role-handoff behavior: deployment runbook/process footgun.
+- Factory duplicate-deployment reentrancy: rejected because relevant vault metadata calls execute under static context.
+- `isDeployedStrategy()` reverting on arbitrary non-strategy input: brittle helper with no demonstrated security consumer.
+- `setReferral(0)`, generic ERC777/fee-on-transfer behavior, and generic WETH token quirks: non-applicable to the intended integration.
+- The baseline run's earlier demotion of excess loose-wstETH unwrapping is superseded for `4580174c...` by the more complete DF-17 amount-safety evidence.
+
+## Verification Record
+
+This synthesis did not rerun fork tests. It relies on the committed run-local evidence:
+
+- dot-context: four focused PoCs passed; final baseline reported 46 passed, 0 failed, 0 skipped.
+- Human Pages: baseline reported 46 passed; three focused `.audit`-resident PoCs passed.
+- Codex Security: production build passed, focused existing tests passed, and the disposable max-deposit donation PoC passed.
+- Nemesis: withdrawal-queue, Strategy4626, operation, and full fork suites passed as recorded; promoted issues were trace-verifiable Low findings.
+- solidity-auditor: targeted `WithdrawalQueueTest` and `Strategy4626Test` suites passed.
+- 5.6 Sol Codex Security: production contracts built with pinned Vyper 0.3.7; focused offline, fork, and model-based validations are recorded per finding.
+- 5.6 Sol solidity-auditor: nine findings survived validation; temporary queue-cap and buffer-fee checks passed, all five Strategy4626 tests passed at the pinned block, ABI direct-replay checks passed, and fixed-block calls established the quoted vault/wrapper behavior.
+
+Deployment facts should be collected for DF-04, DF-09, DF-10, DF-11, DF-13, and DF-16 so their final severity and applicability can be fixed. No test was rerun as part of this synthesis integration; the statements above are sourced from the committed run-local receipts on their respective branches.

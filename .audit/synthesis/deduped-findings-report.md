@@ -2,13 +2,13 @@
 
 ## Synthesis Scope
 
-This report consolidates the committed tool outputs under `.audit/` on `review` and the two 5.6 Sol model-run bundles committed on `review-sol-update` into canonical finding families. It is a synthesis of prior evidence, not a new audit pass.
+This report consolidates the committed tool outputs under `.audit/` on `review` and the four 5.6 Sol model-run bundles committed on `review-sol-update` into canonical finding families. It is a synthesis of prior evidence, not a new audit pass.
 
 - Baseline production snapshot: `521fff28ad978a37115be8995a1d631611fa1d3d` on `review`
 - 5.6 Sol run snapshot: `4580174c60ccac4658d97b02f0951aec92b218b2` on `review-sol-update`
 - Branch relationship: `4580174c...` descends from `521fff28...` through two source-changing commits
-- Audit-artifact branch head: `2539bb003278f4c663f76b8246ab97053f2b84c1`; no production source changes occur between `4580174c...` and that branch head
-- Repository `HEAD` at synthesis start: `36ea599e4fde66f6d7b04318041b9d192683dbbc`; its production source still matches the baseline snapshot
+- Audit-artifact branch head: `f5f547278a398ee0b8edd1d24daab9877186178e`; no production source changes occur between `4580174c...` and that branch head
+- Repository `HEAD` at this synthesis integration: `ded888c86d46604fa30cb6f25491766a66b9ae79`; its production source still matches the baseline snapshot
 - Scope: first-party production contracts, interfaces, and relevant deployment scripts covered by the committed tool runs
 - Excluded from independent vote counts: x-ray orientation, duplicated Nemesis subpass summaries, raw candidates rejected by a tool's own finalizer, and generated PoC/build artifacts
 
@@ -19,6 +19,8 @@ The committed evidence sources are:
 | Codex Security | `.audit/codex-security/351c58eb-604e-4d06-91a4-9a0d6e65626b/report.md` and `findings.json` | 2 final report findings; candidate validation artifacts retained separately |
 | dot-context | `.audit/dot-context/outputs/1/audit-report.md` and `findings.json` | 4 Medium and 2 Low findings |
 | Human Pages | `.audit/human-pages/findings.md`, `findings.jsonl`, and `poc_results.md` | 2 validated, 3 conditional, plus downgraded and rejected notes |
+| dot-context-sol | `review-sol-update@f5f5472:.audit/dot-context/outputs/1/audit-report.md` and `findings.json` | 1 Medium and 3 Low findings against `4580174c...` |
+| human-pages-sol | `review-sol-update@f5f5472:.audit/human-pages/findings.md`, `findings.jsonl`, and `poc_results.md` | 5 validated, 2 plausible, and 1 rejected hypothesis against `4580174c...` |
 | Nemesis | `.audit/findings/nemesis-verified.md` | 3 verified Low findings; Feynman and state-inconsistency files are subpasses of the same run |
 | x-ray + solidity-auditor | `.audit/solidity-auditor-521fff2/validated-findings-and-leads.md` | 3 validated findings and 5 validated leads; x-ray is orientation only |
 | 5.6 Sol Codex Security run | `review-sol-update@2539bb0:.audit/codex-security/b28ae933-e033-4054-aabb-a11a84937880/report.md` and `findings.json` | 9 final findings against `4580174c...` |
@@ -36,7 +38,7 @@ The synthesis yields:
 
 - 4 confirmed Medium findings
 - 2 confirmed but deployment-conditional Medium findings
-- 9 Low findings or operational weaknesses
+- 10 Low findings or operational weaknesses
 - 2 conditional trust-boundary or informational findings
 
 | ID | Severity | Status | Applicability | Canonical finding |
@@ -58,6 +60,7 @@ The synthesis yields:
 | DF-15 | Low | Confirmed configuration footgun | Both snapshots | Restoring the report buffer can mint fee shares without an economic gain |
 | DF-16 | Low | Confirmed, market-conditional | Both snapshots | Queue accounting mixes nominal request value with actual claim proceeds |
 | DF-17 | Low | Confirmed operational weakness | `4580174c...` snapshot only | The Strategy4626 unwind helper is not amount-safe across edge states |
+| DF-18 | Low | Confirmed | Both snapshots | Zero-supply residual assets can be captured by the next depositor |
 
 ## Confirmed and Reportable Findings
 
@@ -82,6 +85,7 @@ Provenance:
 - dot-context `M-02` — Medium, PoC-backed
 - solidity-auditor `F-01` — Medium, validated trace
 - Human Pages downgraded note, "Management manual swaps can create stale-accounting withdrawal windows" — same mechanics, calibrated as trusted sequencing risk
+- human-pages-sol `HP-V6` — Medium, production-fork PoC confirmed that the first of two equal holders can exit at stale value after a lossy Curve unwind
 
 Recommended remediation:
 
@@ -115,6 +119,8 @@ Provenance:
 - solidity-auditor demoted trail, "stakeAsset not honored by report/tend" — treated as intended when isolated from shutdown
 - 5.6 Sol Codex Security `csf_d9b4fe4044f8f96d22efd58a` and `csf_c5a9e2a967e22583d8780558` — separate report and tend findings, both Low due keeper gating
 - 5.6 Sol solidity-auditor `VL-02` — conditional lead due the same trusted-role precondition
+- dot-context-sol `M-01` — Medium, mainnet-fork PoC showed report consuming more than 99% of emergency-freed idle WETH while shutdown remained active
+- human-pages-sol `HP-V1` — Medium, production-fork PoCs independently confirmed both tend and report variants
 
 Recommended remediation:
 
@@ -149,6 +155,7 @@ Provenance:
 - 5.6 Sol Codex Security `csf_5236c2f55c0be4d5a012af25` — live-cap overshoot after route surplus or balance aggregation
 - 5.6 Sol Codex Security `csf_2908870927c06eae78c8a5a4` — amount-scoped staking sweeps unrelated loose balances
 - 5.6 Sol solidity-auditor `VF-03` and `VL-03` — final-deposit and direct-tend capacity variants
+- dot-context-sol `L-01` — Low after PoC calibration; donated loose wstETH exceeded a mutable downstream live cap by one wei and repeatedly blocked reports
 
 Recommended remediation:
 
@@ -177,6 +184,7 @@ Provenance:
 
 - dot-context `M-01` — Medium, PoC-backed
 - Human Pages `HP-C-02` — conditional Medium, source-traced
+- human-pages-sol `HP-V7` — Medium, production-fork PoC quantified about 9 WETH of captured preexisting yield for a 900 WETH pre-report deposit against 100 WETH of incumbent assets
 
 Recommended remediation:
 
@@ -305,6 +313,7 @@ Provenance:
 
 - Human Pages `HP-C-03`
 - 5.6 Sol solidity-auditor `VL-08` and `VL-11` — zero-share and arbitrary-vault variants
+- human-pages-sol `HP-V4` — conditional mock PoCs demonstrated both fee-socialized loss and a non-migratable zero-redemption-capacity lock; no claim was made about the scripted vault's current behavior
 
 Recommended remediation:
 
@@ -364,6 +373,7 @@ Provenance:
 
 - 5.6 Sol Codex Security `csf_46d2a8b0062d1f2a0e5d1795` — Medium, four focused fee-valuation tests
 - 5.6 Sol solidity-auditor `VL-09` — conditional lead because the configured vault was fee-free at the checked block
+- human-pages-sol `HP-V4` — conditional Medium mechanism; an interface-valid 10% fee vault caused gross booking and socialized loss in the verifier harness
 
 Recommended remediation:
 
@@ -384,6 +394,10 @@ Provenance:
 
 - 5.6 Sol Codex Security `csf_2fb78692d339540f18df9133` — Low; focused production-linked harness reproduced failure at 99% output and success after a 100-basis-point buffer
 - 5.6 Sol solidity-auditor `VL-01` — conditional lead due emergency-role gating
+- dot-context-sol `L-03` — Low; source and repository-test configuration confirmed the default exact-par requirement
+- human-pages-sol `HP-V2` — conditional Medium at the source level; production-fork verification observed a below-par quote, default unwind failure, emergency-role access failures, and management-assisted recovery
+
+Severity reconciliation: human-pages-sol rated the separated-role outage Medium under management loss, while the other three 5.6 Sol sources retained Low because no attacker is required or profits and a healthy management key or later market recovery restores the path. The synthesis retains Low and records the stronger conditional impact here.
 
 Recommended remediation:
 
@@ -424,6 +438,8 @@ Provenance:
 - 5.6 Sol Codex Security `csf_e74ae140bceefd722ddf44dc` — Low; offline model reproduced a 100-for-90 claim and asymmetric holder outcomes
 - 5.6 Sol solidity-auditor `VL-04` and `VL-05` — residual-pending and stale-withdrawal variants
 - 5.6 Sol solidity-auditor `VL-06` and `VL-07` — early-clear and partial-batch conditional variants
+- dot-context-sol `L-02` — Low; source validation confirmed that actual claim proceeds can leave a report-blocking remainder
+- human-pages-sol `HP-V6` — Medium for the broader stale-loss exit-ordering root; its queue under-settlement variant is treated here as an amplifier of the same nominal-versus-actual mismatch
 
 Recommended remediation:
 
@@ -449,12 +465,40 @@ Provenance:
 - 5.6 Sol solidity-auditor `VF-04` — mixed-balance partial unwind
 - 5.6 Sol solidity-auditor `VF-05` — pinned production call confirmed `unwrap(0)` reverts
 - 5.6 Sol solidity-auditor `VF-06` — full-loose-balance unwrap instead of shortfall
+- human-pages-sol `HP-V4` — a blocked-redemption vault harness independently reached the zero-amount unwrap revert and confirmed that the immutable vault shares remained trapped
 
 Recommended remediation:
 
 - Compute the total target once across loose stETH, loose wstETH, and redeemable vault shares.
 - Skip zero-amount wrapper calls and unwrap only the exact bounded shortfall.
 - Add mixed-balance, zero-capacity, and excess-loose-balance emergency tests.
+
+### DF-18: Zero-supply residual assets can be captured by the next depositor
+
+- Severity: Low
+- Confidence: High
+- Status: Confirmed with a production-fork PoC; rare multi-party sequence
+
+TokenizedStrategy converts assets to shares one-for-one when effective supply is zero without checking whether the strategy still controls residual assets. A conservative report can let all existing shares redeem their cached value while a favorable manual unwind leaves additional loose WETH behind. Once supply and cached `totalAssets` both reach zero, the next depositor becomes the sole shareholder; a later report assigns the orphaned WETH to that depositor.
+
+The human-pages-sol verifier created the full sequence without storage mutation: a 5% buffered 100 WETH position was unwound near par, all old shares redeemed, and more than 3 WETH remained at zero supply and zero cached assets. A subsequent 10 WETH depositor captured more than half of that residual after report. The conditional gain is material, but the need for a conservative report, favorable settlement, a complete prior exit, a new deposit, and keeper reporting keeps likelihood Low.
+
+The zero-supply conversion branch comes from the same pinned TokenizedStrategy implementation, and the conservative-report/manual-unwind sequence exists in both reviewed snapshots. The `4580174c...` source changes do not introduce or remove this root.
+
+Affected paths:
+
+- inherited TokenizedStrategy zero-supply share conversion and deposit accounting
+- `src/BaseLSTAccumulator.sol`: buffered valuation and report accounting
+- `src/Strategy.sol`: manual LST-to-WETH unwind
+
+Provenance:
+
+- human-pages-sol `HP-V8` — Low, production-fork PoC with a measurable orphan and next-depositor capture
+
+Recommended remediation:
+
+- Reject zero-supply deposits while any strategy-controlled asset remains.
+- Alternatively, reconcile or sweep residual value to a defined beneficiary before minting the new initial supply.
 
 ## Source-to-Canonical Mapping
 
@@ -480,6 +524,18 @@ Recommended remediation:
 | Human Pages emergency-withdraw downgraded note | DF-07 | Controls final severity calibration |
 | Human Pages factory/configuration note | DF-08 plus downgraded notes | Buffer issue promoted; zero-address/event concerns not promoted |
 | Human Pages direct-deployment-script note | Downgraded note | Operational handoff issue; not promoted |
+| dot-context-sol `M-01` | DF-02 | Core confirmed shutdown-report path |
+| dot-context-sol `L-01` | DF-03 | Donation/live-cap variant; mechanics confirmed and severity reduced |
+| dot-context-sol `L-02` | DF-16 | Report-blocking nominal-versus-actual remainder |
+| dot-context-sol `L-03` | DF-14 | Exact-par emergency floor corroboration |
+| human-pages-sol `HP-V1` | DF-02 | Independently confirms both post-shutdown keeper paths |
+| human-pages-sol `HP-V2` | DF-14 | Stronger conditional severity retained as a reconciliation note |
+| human-pages-sol `HP-V3` | Downgraded note | Deployment handoff mechanics validated; operational likelihood keeps it below the canonical table |
+| human-pages-sol `HP-V4` | DF-10 / DF-13 / DF-17 | Immutable-vault trust, fee-booking, and zero-capacity exit variants |
+| human-pages-sol `HP-V5` | Rejected | Factory metadata calls execute under static context and block the proposed nested deployment |
+| human-pages-sol `HP-V6` | DF-01 / DF-16 | Core stale-loss ordering path plus queue under-settlement amplifier |
+| human-pages-sol `HP-V7` | DF-04 | Core zero-unlock pre-report capture path |
+| human-pages-sol `HP-V8` | DF-18 | New zero-supply residual-capture family |
 | Nemesis `NEM-001` | DF-08 | Core confirmed path |
 | Nemesis `NEM-002` | DF-06 | Corroboration |
 | Nemesis `NEM-003` | DF-09 | Corroboration |
@@ -530,8 +586,8 @@ Nemesis `FF-*` and `SI-*` identifiers map to `NEM-001` through `NEM-003`; they a
 The following items remain below the reportable threshold unless deployment facts add impact:
 
 - Factory and `setAddresses()` zero-address validation and missing events: management-only configuration hardening.
-- Direct `Deploy4626.s.sol` role-handoff behavior: deployment runbook/process footgun.
-- Factory duplicate-deployment reentrancy: rejected because relevant vault metadata calls execute under static context.
+- Direct `Deploy4626.s.sol` role-handoff behavior: human-pages-sol `HP-V3` validated the script-shaped deployment and failed acceptance by the logged address, but lasting harm still requires poor broadcaster-key handling and later funding, so it remains a deployment runbook/process footgun.
+- Factory duplicate-deployment reentrancy: human-pages-sol `HP-V5` rejected the hypothesis with an adversarial callback test because relevant vault metadata calls execute under static context.
 - `isDeployedStrategy()` reverting on arbitrary non-strategy input: brittle helper with no demonstrated security consumer.
 - `setReferral(0)`, generic ERC777/fee-on-transfer behavior, and generic WETH token quirks: non-applicable to the intended integration.
 - The baseline run's earlier demotion of excess loose-wstETH unwrapping is superseded for `4580174c...` by the more complete DF-17 amount-safety evidence.
@@ -542,6 +598,8 @@ This synthesis did not rerun fork tests. It relies on the committed run-local ev
 
 - dot-context: four focused PoCs passed; final baseline reported 46 passed, 0 failed, 0 skipped.
 - Human Pages: baseline reported 46 passed; three focused `.audit`-resident PoCs passed.
+- dot-context-sol: the shutdown PoC passed 1/1, the mutable-cap ERC4626 PoCs passed 2/2, and the live-head baseline reported 45 passed and 1 rounding-sensitive failure out of 46.
+- human-pages-sol: all eight canonical hypotheses were tested; the final isolated verifier suite passed 10/10, the native shutdown baseline passed 3/3, and `findings.jsonl` validated as eight unique schema-conforming records.
 - Codex Security: production build passed, focused existing tests passed, and the disposable max-deposit donation PoC passed.
 - Nemesis: withdrawal-queue, Strategy4626, operation, and full fork suites passed as recorded; promoted issues were trace-verifiable Low findings.
 - solidity-auditor: targeted `WithdrawalQueueTest` and `Strategy4626Test` suites passed.

@@ -2,15 +2,16 @@
 
 ## Synthesis Scope
 
-This report consolidates the committed tool outputs under `.audit/` on `review`, the four 5.6 Sol model-run bundles committed on `review-sol-update`, the preserved clean-worktree Plamen Core baseline run, and the clean-worktree ZeroSkills run into canonical finding families. It is a synthesis of prior evidence, not a new audit pass.
+This report consolidates the committed tool outputs under `.audit/` on `review`, the four 5.6 Sol model-run bundles committed on `review-sol-update`, the preserved clean-worktree Plamen Core and Thorough runs, and the clean-worktree ZeroSkills run into canonical finding families. It is a synthesis of prior evidence, not a new audit pass.
 
 - Baseline production snapshot: `521fff28ad978a37115be8995a1d631611fa1d3d` on `review`
 - 5.6 Sol run snapshot: `4580174c60ccac4658d97b02f0951aec92b218b2` on `review-sol-update`
 - Plamen Core run snapshot: `521fff28ad978a37115be8995a1d631611fa1d3d`, from a dedicated clean detached worktree
+- Plamen Thorough run snapshot: `4580174c60ccac4658d97b02f0951aec92b218b2`, from a dedicated clean detached worktree
 - ZeroSkills run snapshot: `4580174c60ccac4658d97b02f0951aec92b218b2`, from a dedicated clean detached worktree
 - Branch relationship: `4580174c...` descends from `521fff28...` through two source-changing commits
 - Audit-artifact branch head: `f5f547278a398ee0b8edd1d24daab9877186178e`; no production source changes occur between `4580174c...` and that branch head
-- Repository `HEAD` at this synthesis integration: `c17e11e26c4144ef7c561cfc4d3beb0204355029`; its production source still matches the baseline snapshot
+- Repository `HEAD` at this synthesis integration: `3c5f4ec1035b22d21014fa1c4958686e481c8de3`; its production source still matches the baseline snapshot
 - Scope: first-party production contracts, interfaces, and relevant deployment scripts covered by the committed tool runs
 - Excluded from independent vote counts: x-ray orientation, duplicated Nemesis subpass summaries, raw candidates rejected by a tool's own finalizer, and generated PoC/build artifacts
 
@@ -26,6 +27,7 @@ The evidence sources are:
 | Nemesis | `.audit/findings/nemesis-verified.md` | 3 verified Low findings; Feynman and state-inconsistency files are subpasses of the same run |
 | x-ray + solidity-auditor | `.audit/solidity-auditor-521fff2/validated-findings-and-leads.md` | 3 validated findings and 5 validated leads; x-ray is orientation only |
 | Plamen Core baseline | `../steth-accumulator-strategy-plamen-core-521fff2/.audit/plamen-runs/core-baseline-2026-07-13-521fff2/{AUDIT_REPORT.md,run_notes.md,.scratchpad/mechanical_verify_manifest.json}` | 8 Medium body findings and 1 appendix observation against `521fff28...`; 2 body findings carry final `POC-PASS` tags |
+| Plamen Thorough | `../steth-accumulator-strategy-plamen-thorough-4580174-20260713/.audit/plamen-runs/thorough-baseline-2026-07-13-4580174/{AUDIT_REPORT.md,provenance.md,.scratchpad/verdict_manifest.json}` | 22 actual post-disposition body sections against `4580174c...` (15 Medium, 7 Low), plus 4 quality observations; 1 body finding carries a final `POC-PASS` tag. The generated executive summary says 23 because its M-13-to-M-02 merge was not propagated to the header and priority list. |
 | ZeroSkills (`code-sleuth` + `symmetry-sniper`) | `.audit/zeroskills-steth-accumulator-strategy-20260713.md` | 4 validated findings (1 Medium, 3 Low), 1 plausible conditional lead, and no validated storage-integrity finding against `4580174c...` |
 | 5.6 Sol Codex Security run | `review-sol-update@2539bb0:.audit/codex-security/b28ae933-e033-4054-aabb-a11a84937880/report.md` and `findings.json` | 9 final findings against `4580174c...` |
 | 5.6 Sol solidity-auditor run | `review-sol-update@2539bb0:.audit/pashov-4580174-20260710T112356Z/synthesis/validated-findings-and-leads.md` | 9 validated findings and 11 validated or conditional leads against `4580174c...`; x-ray remained orientation only |
@@ -41,11 +43,13 @@ Counts and table severities use the highest reconciled severity applicable to ei
 The synthesis yields:
 
 - 4 confirmed Medium findings
-- 2 confirmed but deployment-conditional Medium findings
-- 10 Low findings or operational weaknesses
+- 3 deployment- or configuration-conditional Medium findings, including one code-trace-only mechanism
+- 12 Low findings or operational weaknesses
 - 2 conditional trust-boundary or informational findings
 
-The Plamen Core delta does not add a nineteenth family or change these counts. Six of its eight body mechanisms remain present at `4580174c...`; its Strategy4626 emergency-exit item is the baseline-only DF-07 defect fixed by that later snapshot, and its contested zero-minimum emergency-swap item describes the baseline side of the slippage trade-off later represented by DF-14. Plamen's appendix-only profit-unlock observation failed its attempted PoC and adds no proof beyond DF-04's existing production-fork evidence.
+The Plamen Core delta does not add a nineteenth family. Six of its eight body mechanisms remain present at `4580174c...`; its Strategy4626 emergency-exit item is the baseline-only DF-07 defect fixed by that later snapshot, and its contested zero-minimum emergency-swap item describes the baseline side of the slippage trade-off later represented by DF-14. Plamen's appendix-only profit-unlock observation failed its attempted PoC and adds no proof beyond DF-04's existing production-fork evidence.
+
+The Plamen Thorough delta adds three canonical families: DF-19 for report-buffer-discounted capacity, DF-20 for unbounded single-request Lido exits, and DF-21 for omitted direct-Lido live capacity. All three remain final code-trace findings without an executed end-to-end PoC; their configuration or external-state applicability is stated explicitly below. Thorough also upgrades DF-05 with the run's sole final `POC-PASS`, expands DF-11 and DF-16 with role-lifecycle and per-request-accounting variants, and supplies additional code-trace corroboration elsewhere. Thorough L-01 is not promoted because the existing human-pages-sol adversarial callback test rejected the same reentrant factory-deployment hypothesis. The direct Core-vs-Thorough comparison, including commit and routing confounders, is recorded in `.audit/synthesis/plamen-core-vs-thorough.md`.
 
 The ZeroSkills delta also adds no new family or count change. Its merged liquidity-relocking finding separates into DF-02's post-shutdown keeper path and DF-12's ordinary-depositor path under the canonical taxonomy; its other validated findings map directly to DF-03, DF-05, and DF-06. Its sole conditional queue-settlement lead is already represented by DF-16.
 
@@ -69,6 +73,9 @@ The ZeroSkills delta also adds no new family or count change. Its merged liquidi
 | DF-16 | Low | Confirmed, market-conditional | Both snapshots | Queue accounting mixes nominal request value with actual claim proceeds |
 | DF-17 | Low | Confirmed operational weakness | `4580174c...` snapshot only | The Strategy4626 unwind helper is not amount-safe across edge states |
 | DF-18 | Low | Confirmed | Both snapshots | Zero-supply residual assets can be captured by the next depositor |
+| DF-19 | Medium | Code-trace-only, configuration-conditional | Both snapshots | Report-buffer haircuts recursively reopen deposit capacity |
+| DF-20 | Low | Code-trace-only, external-limit-conditional | Both snapshots | Lido withdrawal requests are not bounded or split to the queue's accepted range |
+| DF-21 | Low | Code-trace-only, external-state-conditional | Both snapshots | Advertised capacity ignores Lido's live direct-staking limit |
 
 ## Confirmed and Reportable Findings
 
@@ -95,6 +102,7 @@ Provenance:
 - Human Pages downgraded note, "Management manual swaps can create stale-accounting withdrawal windows" — same mechanics, calibrated as trusted sequencing risk
 - human-pages-sol `HP-V6` — Medium, production-fork PoC confirmed that the first of two equal holders can exit at stale value after a lossy Curve unwind
 - Plamen Core baseline `M-08` — contested, code-trace-only confirmation that the baseline emergency path supplied zero as Curve's output floor; no forked sandwich or realized loss was executed, so it is retained only as a DF-01 loss/slippage amplifier rather than independent proof
+- Plamen Thorough `M-11` — contested code trace of the adjacent nominal one-to-one LST valuation premise; no live impairment or separate cohort-loss sequence was executed, so it adds context rather than a new family
 
 Recommended remediation:
 
@@ -132,6 +140,7 @@ Provenance:
 - human-pages-sol `HP-V1` — Medium, production-fork PoCs independently confirmed both tend and report variants
 - Plamen Core baseline `M-06` — Medium in the source report, but code-trace-only and unexecuted; corroborates that report and tend remain shutdown-insensitive
 - ZeroSkills `ZS-01` — Medium; a pinned-fork disposable regression confirmed that a post-shutdown report re-stakes emergency-freed WETH and reduces withdrawal liquidity to zero
+- Plamen Thorough `M-06` — final code trace of the same staking-disable and capacity bypass; its Foundry invariant campaign separately minimized a one-call `stakeAsset=false` counterexample without promoting it to end-to-end harm proof
 
 Recommended remediation:
 
@@ -169,6 +178,7 @@ Provenance:
 - dot-context-sol `L-01` — Low after PoC calibration; donated loose wstETH exceeded a mutable downstream live cap by one wei and repeatedly blocked reports
 - Plamen Core baseline `M-07` — Medium in the source report, but final evidence remained code-trace-only after its integration harness failed to initialize; maps to the same zero-capacity loose-wstETH deposit path
 - ZeroSkills `ZS-04` — Low; a pinned-fork disposable regression removed nested-vault capacity, donated one wei of wstETH, and reproduced `ERC4626: deposit more than max` on the next report
+- Plamen Thorough `M-04` and `L-08` — split the same root into terminal sink enforcement and advertised-capacity accounting; a local invariant minimized the zero-capacity-plus-one-wei branch, while the final findings remained `CODE-TRACE`
 
 Recommended remediation:
 
@@ -199,6 +209,7 @@ Provenance:
 - Human Pages `HP-C-02` — conditional Medium, source-traced
 - human-pages-sol `HP-V7` — Medium, production-fork PoC quantified about 9 WETH of captured preexisting yield for a 900 WETH pre-report deposit against 100 WETH of incumbent assets
 - Plamen Core baseline appendix `I-01` — contested and mechanically demoted after `POC-FAIL`; mapped for source completeness only and not counted as corroborating proof
+- Plamen Thorough `M-14` — contested; a fork test confirmed only the zero profit-unlock configuration, not the late-depositor capture sequence, so it adds no proof beyond `HP-V7`
 
 Recommended remediation:
 
@@ -221,6 +232,7 @@ Provenance:
 - 5.6 Sol Codex Security `csf_7f9d7622a90752f126134dd1` — Low, final report finding
 - 5.6 Sol solidity-auditor `VF-08` — Low; a temporary lifecycle check filled a 100 WETH cap, queued the full LST balance, observed reopened room, refilled it, and confirmed held-plus-pending exposure above the cap
 - ZeroSkills `ZS-03` — Low; a disposable regression independently filled a 10 WETH cap, queued essentially all LST, refilled the reopened room, and confirmed both stored and economic assets above the cap
+- Plamen Thorough `M-01` — final `POC-PASS`; a 100-unit boundary test and 256-case fuzz variant independently reopened and refilled capacity until economic exposure reached twice the configured cap
 
 Recommended remediation:
 
@@ -245,6 +257,7 @@ Provenance:
 - Codex Security candidate `CS-351C58EB-001` — validation summary marked reportable, but it was not included in the final `findings.json`
 - 5.6 Sol solidity-auditor `VF-02` — direct-replay validation and ABI checks
 - Plamen Core baseline `M-04` — code-trace finding with a passing ABI-decoding check; no external queue lifecycle was executed
+- Plamen Thorough `M-03` — final code trace of the same initiation/claim shape mismatch; its generated unit check exercised local decode behavior but not the external queue lifecycle
 - ZeroSkills `ZS-02` — Low; `cast` confirmed that direct array-as-scalar decoding returns request id 32, while all seven queue tests passed only through explicit decode/re-encode handling
 
 Severity reconciliation: Low is retained because the path is privileged and operators can transform the data or use emergency/manual recovery. The interface mismatch itself is fully demonstrated.
@@ -313,6 +326,7 @@ Provenance:
 - Codex Security candidate `CS-351C58EB-005` — deferred because production registration was not established
 - 5.6 Sol solidity-auditor `VF-07` — Low at confidence 75 after repository-consumer searches found no local allocator integration
 - Plamen Core baseline `M-02` — executable property test confirmed that distinct strategies and opposite debt deltas both return `4e16`; production registration remains unproven
+- Plamen Thorough `M-07` appendix and invariant `FUZZ-1` — reconfirmed constant output across state changes, but found no production consumer and did not promote the issue into the client report body
 
 Recommended remediation:
 
@@ -334,6 +348,7 @@ Provenance:
 - 5.6 Sol solidity-auditor `VL-08` and `VL-11` — zero-share and arbitrary-vault variants
 - human-pages-sol `HP-V4` — conditional mock PoCs demonstrated both fee-socialized loss and a non-migratable zero-redemption-capacity lock; no claim was made about the scripted vault's current behavior
 - Plamen Core baseline `M-01` — local malicious-vault unit PoC demonstrated unlimited wstETH allowance use and attacker-controlled `convertToAssets()` valuation after permissionless factory deployment; impact still requires funds to reach that attacker-selected strategy
+- Plamen Thorough `M-15` and `M-17` — final code traces split the same trust boundary into ignored deposit output and arbitrary-vault deployment variants; neither executed a new funded-vault exploit
 
 Recommended remediation:
 
@@ -346,17 +361,19 @@ Recommended remediation:
 - Confidence: High on behavior, Low on security impact
 - Status: Operational and indexing risk
 
-Anyone can call `newStrategy4626()` for a vault whose asset is wstETH. The caller does not gain strategy privileges, and management must still accept the strategy, but the factory immediately records a single deployment using the current role defaults. Off-chain consumers must not interpret the factory mapping or event as management endorsement of the underlying vault.
+Anyone can call `newStrategy4626()` for a vault whose asset is wstETH. The caller does not gain strategy privileges, and management must still accept the strategy, but the factory immediately records a single deployment using the current role defaults. Later changes to those factory defaults do not rotate roles on existing strategies. Off-chain consumers must not interpret the factory mapping or event as management endorsement of the underlying vault, and operators must treat deployed role assignments as independent lifecycle state.
 
 Provenance:
 
 - solidity-auditor `L-04`
 - 5.6 Sol solidity-auditor `VL-10` and `VL-11` — stale role-snapshot and arbitrary-vault registry variants
 - Plamen Core baseline `M-01` — corroborates permissionless arbitrary-vault deployment, but does not show that factory registration alone transfers funds or constitutes management endorsement
+- Plamen Thorough `M-05` and `M-17` — code-trace role-snapshot and arbitrary-vault variants; no unauthorized action or registry-to-funding path was executed
 
 Recommended remediation:
 
 - Add a management allowlist or reservation step, or expose a separate endorsement state that indexers and allocators can distinguish from permissionless creation.
+- Provide an explicit existing-strategy role-rotation workflow and verify post-deployment assignments independently of mutable factory defaults.
 
 ## 5.6 Sol Run Additions
 
@@ -396,6 +413,7 @@ Provenance:
 - 5.6 Sol Codex Security `csf_46d2a8b0062d1f2a0e5d1795` — Medium, four focused fee-valuation tests
 - 5.6 Sol solidity-auditor `VL-09` — conditional lead because the configured vault was fee-free at the checked block
 - human-pages-sol `HP-V4` — conditional Medium mechanism; an interface-valid 10% fee vault caused gross booking and socialized loss in the verifier harness
+- Plamen Thorough `M-16` — final code trace of gross `convertToAssets()` valuation without a realizable-redemption guard; no fee-bearing production vault was identified
 
 Recommended remediation:
 
@@ -420,6 +438,7 @@ Provenance:
 - 5.6 Sol solidity-auditor `VL-01` — conditional lead due emergency-role gating
 - dot-context-sol `L-03` — Low; source and repository-test configuration confirmed the default exact-par requirement
 - human-pages-sol `HP-V2` — conditional Medium at the source level; production-fork verification observed a below-par quote, default unwind failure, emergency-role access failures, and management-assisted recovery
+- Plamen Thorough `M-10` — final code trace of the same buffer-derived floor and separated-role recovery dependency; its intended fork execution was blocked, so it adds corroboration rather than new proof
 
 Severity reconciliation: human-pages-sol rated the separated-role outage Medium under management loss, while the other three 5.6 Sol sources retained Low because no attacker is required or profits and a healthy management key or later market recovery restores the path. The synthesis retains Low and records the stronger conditional impact here.
 
@@ -465,6 +484,7 @@ Provenance:
 - dot-context-sol `L-02` — Low; source validation confirmed that actual claim proceeds can leave a report-blocking remainder
 - human-pages-sol `HP-V6` — Medium for the broader stale-loss exit-ordering root; its queue under-settlement variant is treated here as an amplifier of the same nominal-versus-actual mismatch
 - Plamen Core baseline `M-03` — final report evidence tag remained `CODE-TRACE`; its focused unit harness passed for a 100 nominal / 99 received postcondition and report revert, but no external loss-bearing queue settlement was executed
+- Plamen Thorough `M-02`, `M-09`, and `M-12`, including the absorbed `M-13` trail — final code traces extend the same root through stale withdrawal pricing, aggregate clearing, and unbound request identifiers; no end-to-end external discounted settlement was executed
 - ZeroSkills `ZS-L1` — Informational/Low conditional lead only; source tracing confirmed the nominal-versus-actual subtraction, but the exact-payout repo mock could not establish a live discounted settlement
 
 Recommended remediation:
@@ -492,6 +512,7 @@ Provenance:
 - 5.6 Sol solidity-auditor `VF-05` — pinned production call confirmed `unwrap(0)` reverts
 - 5.6 Sol solidity-auditor `VF-06` — full-loose-balance unwrap instead of shortfall
 - human-pages-sol `HP-V4` — a blocked-redemption vault harness independently reached the zero-amount unwrap revert and confirmed that the immutable vault shares remained trapped
+- Plamen Thorough `L-03`, `L-04`, and `L-09` — final code traces independently split the replacement helper into partial-unwind, full-loose-balance, and zero-amount-call edge cases
 
 Recommended remediation:
 
@@ -520,11 +541,68 @@ Affected paths:
 Provenance:
 
 - human-pages-sol `HP-V8` — Low, production-fork PoC with a measurable orphan and next-depositor capture
+- Plamen Thorough `L-10` — contested code-trace variant involving temporarily unaccounted native ETH; no inherited share-pricing or capture sequence was executed
 
 Recommended remediation:
 
 - Reject zero-supply deposits while any strategy-controlled asset remains.
 - Alternatively, reconcile or sweep residual value to a defined beneficiary before minting the new initial supply.
+
+## Plamen Thorough Run Additions
+
+### DF-19: Report-buffer haircuts recursively reopen deposit capacity
+
+- Severity: Medium when `depositLimit` is intended as a hard gross-exposure cap
+- Confidence: High on arithmetic; Medium on deployment impact
+- Status: Code-trace-confirmed mechanics; unexecuted and configuration-conditional
+
+`estimatedTotalAssets()` discounts LST-side value by `reportBuffer`, and Strategy4626 derives remaining deposit room by subtracting that discounted value from `_depositLimit`. Depositing and staking therefore increases measured exposure by less than the accepted deposit whenever the buffer is nonzero. Repeating the cycle can drive gross economic exposure toward `depositLimit / (1 - reportBuffer)`; at the maximum permitted 100% buffer, the cap no longer constrains LST-side exposure at all.
+
+This differs from baseline-only DF-08: the later snapshot correctly rejects out-of-range buffers, but every valid nonzero buffer still participates in this recursive capacity calculation. Impact depends on whether the limit is intended to cap gross deployed exposure rather than conservative reported NAV.
+
+Provenance:
+
+- Plamen Thorough `M-08` — final code trace with algebraic and bounded-cycle analysis; the intended production-linked PoC did not execute because local dependencies lacked code and the fallback RPC returned HTTP 403
+
+Recommended remediation:
+
+- Enforce the risk limit against undiscounted gross exposure and reserve `reportBuffer` for report/NAV conservatism.
+- If the discounted-cap policy is intentional, document the effective gross bound and enforce a much tighter maximum buffer.
+- Add repeated deposit/stake tests across nonzero buffer values, including the maximum allowed setting.
+
+### DF-20: Lido withdrawal requests are not bounded or split to the queue's accepted range
+
+- Severity: Low
+- Confidence: High on source mechanics; Low on current external bounds
+- Status: Code-trace-only operational weakness; external-limit applicability unverified
+
+The queue path submits the full requested amount as a one-element array without checking the withdrawal queue's live per-request minimum or maximum and without splitting oversized exits. A strategy exit that is otherwise valid locally can therefore revert at the external queue boundary and require management to retry with manually partitioned requests. Funds remain controlled, so the primary impact is exit and reporting liveness rather than loss.
+
+Provenance:
+
+- Plamen Thorough `L-02` — final code trace; the run did not execute live Lido queue-boundary calls or establish the applicable production limits
+
+Recommended remediation:
+
+- Query or configure accepted queue bounds, reject sub-minimum requests explicitly, and split oversized requests into a bounded array.
+- Cover boundary, multi-request, and later-claim accounting in an integration test.
+
+### DF-21: Advertised capacity ignores Lido's live direct-staking limit
+
+- Severity: Low
+- Confidence: High on source mechanics; Medium-Low on external-state applicability
+- Status: Code-trace-only operational weakness; external-state applicability unverified
+
+The strategy's advertised deposit room considers its local limit and Lido's paused flag but not Lido's live direct-staking capacity. When direct staking is selected and the protocol-level staking limit is exhausted, a deposit can pass the local capacity check and later revert in `submit()`. This is a liveness and integrator-accuracy issue: value is not lost, but advertised capacity can exceed executable capacity until Lido's external state changes or an alternate route becomes viable.
+
+Provenance:
+
+- Plamen Thorough `L-07` — final code trace; no live exhausted-stake-limit transaction was executed
+
+Recommended remediation:
+
+- Incorporate Lido's current direct-staking allowance into advertised capacity when the direct route can be selected.
+- Add an external-limit-exhaustion test and specify whether callers should retry through Curve or wait for capacity restoration.
 
 ## Source-to-Canonical Mapping
 
@@ -584,6 +662,27 @@ Recommended remediation:
 | Plamen Core baseline `M-07` | DF-03 | Zero-capacity loose-wstETH deposit variant; integration harness did not complete |
 | Plamen Core baseline `M-08` | DF-01 / DF-14 context | Contested baseline zero-floor amplifier; no sandwich PoC and no new family |
 | Plamen Core baseline appendix `I-01` | DF-04 | `POC-FAIL`; source-coverage mapping only, not added proof |
+| Plamen Thorough `M-01` | DF-05 | Final `POC-PASS` and 256-case fuzz proof upgrade for the existing queue-cap family |
+| Plamen Thorough `M-02` plus absorbed `M-13` | DF-16 | Stale-pricing and queue-settlement consequences; external discounted lifecycle not executed |
+| Plamen Thorough `M-03` | DF-06 | Initiation/claim ABI mismatch corroboration |
+| Plamen Thorough `M-04` and `L-08` | DF-03 | Terminal sink-capacity and advertised-capacity split of the existing root |
+| Plamen Thorough `M-05` | DF-11 | Existing-strategy roles do not follow later factory-default rotation |
+| Plamen Thorough `M-06` | DF-02 / DF-03 | Staking-disable and downstream-capacity bypass variants |
+| Plamen Thorough appendix `M-07` | DF-09 | Constant-output property retained as deployment-conditional appendix material |
+| Plamen Thorough `M-08` | DF-19 | New report-buffer/cap recursion family |
+| Plamen Thorough `M-09` and `M-12` | DF-16 | Aggregate-clearing and unbound-request extensions |
+| Plamen Thorough `M-10` | DF-14 | Buffer-derived emergency-floor corroboration; intended fork check did not execute |
+| Plamen Thorough `M-11` | DF-01 context | Nominal LST valuation premise only; no independent loss-shifting lifecycle proved |
+| Plamen Thorough `M-14` | DF-04 | Zero-unlock configuration confirmed; late-depositor capture not executed |
+| Plamen Thorough `M-15` | DF-10 | Ignored downstream deposit-output variant |
+| Plamen Thorough `M-16` | DF-13 | Gross-versus-realizable downstream-vault valuation variant |
+| Plamen Thorough `M-17` | DF-10 / DF-11 | Arbitrary-vault trust and permissionless-registry variant |
+| Plamen Thorough `L-01` | Rejected | Existing adversarial callback test showed the relevant metadata calls execute under static context |
+| Plamen Thorough `L-02` | DF-20 | New external queue-boundary liveness family |
+| Plamen Thorough `L-03`, `L-04`, and `L-09` | DF-17 | Replacement-helper amount-safety variants |
+| Plamen Thorough `L-05` and `L-06` | Downgraded note | Missing factory events and one-step management transfer retained as operational hardening only |
+| Plamen Thorough `L-07` | DF-21 | New external direct-staking-capacity liveness family |
+| Plamen Thorough `L-10` | DF-18 context | Contested native-ETH residual variant; no capture sequence executed |
 | ZeroSkills `ZS-01` | DF-02 / DF-12 | Source merged the common liquidity-relocking invariant; canonical report keeps shutdown-keeper and ordinary-depositor triggers separate |
 | ZeroSkills `ZS-02` | DF-06 | ABI-shape mismatch corroboration with direct decode result 32 |
 | ZeroSkills `ZS-03` | DF-05 | Queue-cap lifecycle independently reproduced |
@@ -628,6 +727,8 @@ The following items remain below the reportable threshold unless deployment fact
 - Factory and `setAddresses()` zero-address validation and missing events: management-only configuration hardening.
 - Direct `Deploy4626.s.sol` role-handoff behavior: human-pages-sol `HP-V3` validated the script-shaped deployment and failed acceptance by the logged address, but lasting harm still requires poor broadcaster-key handling and later funding, so it remains a deployment runbook/process footgun.
 - Factory duplicate-deployment reentrancy: human-pages-sol `HP-V5` rejected the hypothesis with an adversarial callback test because relevant vault metadata calls execute under static context.
+- Plamen Thorough `L-01` is rejected for the same reason: its callback-based orphan hypothesis did not account for the static context already demonstrated by `HP-V5`.
+- Plamen Thorough `L-05` missing factory events and `L-06` one-step management transfer remain operational hardening recommendations without a demonstrated unauthorized-action path.
 - `isDeployedStrategy()` reverting on arbitrary non-strategy input: brittle helper with no demonstrated security consumer.
 - `setReferral(0)`, generic ERC777/fee-on-transfer behavior, and generic WETH token quirks: non-applicable to the intended integration.
 - The baseline run's earlier demotion of excess loose-wstETH unwrapping is superseded for `4580174c...` by the more complete DF-17 amount-safety evidence.
@@ -645,8 +746,9 @@ This synthesis did not rerun fork tests. It relies on the run-local evidence sou
 - Nemesis: withdrawal-queue, Strategy4626, operation, and full fork suites passed as recorded; promoted issues were trace-verifiable Low findings.
 - solidity-auditor: targeted `WithdrawalQueueTest` and `Strategy4626Test` suites passed.
 - Plamen Core baseline: mechanical verification recorded 3 PASS, 18 NO_TEST_FILE, and 1 FAIL across 22 verifier records. The generated unit/property harnesses for `M-01`, `M-02`, and the bounded `M-03` postcondition passed; only `M-01` and `M-02` received final report `POC-PASS` evidence tags. `M-08` was unexecuted and appendix `I-01` was demoted after `POC-FAIL`.
+- Plamen Thorough: mechanical verification recorded 2 PASS, 15 FAIL, and 100 NO_TEST_FILE outcomes across 117 verifier rows. The Foundry invariant campaign executed 17 properties, minimized 14 counterexamples, and passed 3; only `M-01` retained a final body `POC-PASS` tag. The Medusa harness compiled but reverted during deployment, so no Medusa property campaign executed. Two verifier skip reasons were mechanically invalid, and the generated report header retained a 23-versus-22 post-dedup count mismatch.
 - ZeroSkills: the clean `4580174c...` worktree built successfully; the full baseline was 45/46 with only the known one-wei deposit-limit assertion; code-sleuth writer suites passed 12/12; symmetry-targeted existing suites passed 16/16; the disposable four-case regression passed 4/4; and the ABI array-as-scalar check returned 32. The temporary regression file was removed and the audit worktree was clean at handoff.
 - 5.6 Sol Codex Security: production contracts built with pinned Vyper 0.3.7; focused offline, fork, and model-based validations are recorded per finding.
 - 5.6 Sol solidity-auditor: nine findings survived validation; temporary queue-cap and buffer-fee checks passed, all five Strategy4626 tests passed at the pinned block, ABI direct-replay checks passed, and fixed-block calls established the quoted vault/wrapper behavior.
 
-Deployment facts should be collected for DF-04, DF-09, DF-10, DF-11, DF-13, and DF-16 so their final severity and applicability can be fixed. No test was rerun as part of this synthesis integration; the statements above are sourced from the run-local receipts and repo-local reports cited above.
+Deployment facts should be collected for DF-04, DF-09, DF-10, DF-11, DF-13, DF-16, DF-19, DF-20, and DF-21 so their final severity and applicability can be fixed. No test was rerun as part of this synthesis integration; the statements above are sourced from the run-local receipts and repo-local reports cited above.

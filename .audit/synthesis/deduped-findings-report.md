@@ -2,7 +2,7 @@
 
 ## Synthesis Scope
 
-This report consolidates the committed tool outputs under `.audit/` on `review`, the four 5.6 Sol model-run bundles committed on `review-sol-update`, the preserved clean-worktree Plamen Core and Thorough runs, the clean-worktree ZeroSkills run, the controlled strategy-review-agent blind benchmark plus comment-aware replay, and the dedicated adversarial test-suite campaign into canonical finding families. It is a synthesis of prior evidence, not a new audit pass.
+This report consolidates the committed tool outputs under `.audit/` on `review`, the four 5.6 Sol model-run bundles committed on `review-sol-update`, the preserved clean-worktree Plamen Core and Thorough runs, the clean-worktree ZeroSkills run, the controlled strategy-review-agent blind benchmark plus comment-aware replay, the dedicated adversarial test-suite campaign, and completed open-kritt scan 3 into canonical finding families. It is a synthesis of prior evidence, not a new audit pass.
 
 - Baseline production snapshot: `521fff28ad978a37115be8995a1d631611fa1d3d` on `review`
 - 5.6 Sol run snapshot: `4580174c60ccac4658d97b02f0951aec92b218b2` on `review-sol-update`
@@ -10,10 +10,11 @@ This report consolidates the committed tool outputs under `.audit/` on `review`,
 - Plamen Thorough run snapshot: `4580174c60ccac4658d97b02f0951aec92b218b2`, from a dedicated clean detached worktree
 - ZeroSkills run snapshot: `4580174c60ccac4658d97b02f0951aec92b218b2`, from a dedicated clean detached worktree
 - Strategy-review-agent benchmark snapshot: `4580174c60ccac4658d97b02f0951aec92b218b2`, first reviewed blind in a dedicated clean detached worktree and then replayed separately against Issue #765 comments and linked Issue #714 context; the user's manual report remained unread
-- Extended adversarial-test snapshot: `4580174c60ccac4658d97b02f0951aec92b218b2`, from the dedicated `codex/improve-test-suite-4580174` worktree; production source was unchanged and all additions were tests, mocks, test tooling, or documentation
-- Branch relationship: `4580174c...` descends from `521fff28...` through two source-changing commits
+- Extended adversarial-test snapshot: `4580174c60ccac4658d97b02f0951aec92b218b2`, preserved in `codex/improve-test-suite-4580174@e8c5032`; production source was unchanged and all additions were tests, mocks, test tooling, or documentation
+- open-kritt scan snapshot: `24af17e55cffd4b9f618e0a0e3ed9045afca0272`, completed scan 3 over `src/` with the Codex harness and `gpt-5.6-sol`
+- Branch relationship: `4580174c...` descends from `521fff28...` through two source-changing commits; `24af17e...` descends from `4580174c...` through source-changing `46b9c2f` and formatting-only `24af17e`
 - Audit-artifact branch head: `f5f547278a398ee0b8edd1d24daab9877186178e`; no production source changes occur between `4580174c...` and that branch head
-- Repository `HEAD` at this synthesis integration: `36d7b21d5ce35dd6ecf0723b769013f6f32773db`; its production source still matches the baseline snapshot
+- Review synthesis base before the latest integrations: `36d7b21d5ce35dd6ecf0723b769013f6f32773db`; production source on `review` still matches the baseline snapshot
 - Scope: first-party production contracts, interfaces, and relevant deployment scripts covered by the committed tool runs
 - Excluded from independent vote counts: x-ray orientation, duplicated Nemesis subpass summaries, raw candidates rejected by a tool's own finalizer, and generated PoC/build artifacts
 
@@ -32,7 +33,8 @@ The evidence sources are:
 | Plamen Thorough | `../steth-accumulator-strategy-plamen-thorough-4580174-20260713/.audit/plamen-runs/thorough-baseline-2026-07-13-4580174/{AUDIT_REPORT.md,provenance.md,.scratchpad/verdict_manifest.json}` | 22 actual post-disposition body sections against `4580174c...` (15 Medium, 7 Low), plus 4 quality observations; 1 body finding carries a final `POC-PASS` tag. The generated executive summary says 23 because its M-13-to-M-02 merge was not propagated to the header and priority list. |
 | ZeroSkills (`code-sleuth` + `symmetry-sniper`) | `.audit/zeroskills-steth-accumulator-strategy-20260713.md` | 4 validated findings (1 Medium, 3 Low), 1 plausible conditional lead, and no validated storage-integrity finding against `4580174c...` |
 | strategy-review-agent benchmark | `.review-output/blind-benchmark-4580174/{blind-benchmark-report.md,comment-aware-replay.md,evidence/,poc/}` | Blind pass: 5 validated findings and 5 conditional concerns. Comment-aware replay: no new canonical family, one sharper DF-17 variant, fix/intent chronology, and severity reconciliation. The combined fixed-block PoC run passed 8/8; the committed full suite remained 45/46 because of the known one-wei assertion. |
-| Extended adversarial test suite | `../steth-accumulator-strategy-test-suite-4580174/{docs/ADVERSARIAL_TESTING.md,src/test/unit/,src/test/adversarial/,src/test/invariant/,src/test/mocks/ProtocolMocks.sol}` | 80 deterministic security-model tests: 53 enforced properties and 27 executable counterexample or assumption tests; 14 stateful invariants passed at 256 runs and depth 64, including seeds `0x1`, `0x2`, and `0x3`; production coverage reached 205/205 lines, 50/50 functions, and 34/34 branches; all 46 legacy fork tests passed through PublicNode. |
+| Extended adversarial test suite | `codex/improve-test-suite-4580174@e8c5032:{docs/ADVERSARIAL_TESTING.md,src/test/unit/,src/test/adversarial/,src/test/invariant/,src/test/mocks/ProtocolMocks.sol}` | 80 deterministic security-model tests: 53 enforced properties and 27 executable counterexample or assumption tests; 14 stateful invariants passed at 256 runs and depth 64, including seeds `0x1`, `0x2`, and `0x3`; production coverage reached 205/205 lines, 50/50 functions, and 34/34 branches; all 46 legacy fork tests passed through PublicNode. |
+| open-kritt scan 3 | Completed local scan 3 against `24af17e55cffd4b9f618e0a0e3ed9045afca0272`, scoped to `src/` | 46 raw issues deduplicated to 14 canonical issues and bounty-ranked as 1 High, 4 Medium, 4 Low, and 5 Informational; cross-source synthesis adds one Low family and maps or downgrades the other 13. |
 | 5.6 Sol Codex Security run | `review-sol-update@2539bb0:.audit/codex-security/b28ae933-e033-4054-aabb-a11a84937880/report.md` and `findings.json` | 9 final findings against `4580174c...` |
 | 5.6 Sol solidity-auditor run | `review-sol-update@2539bb0:.audit/pashov-4580174-20260710T112356Z/synthesis/validated-findings-and-leads.md` | 9 validated findings and 11 validated or conditional leads against `4580174c...`; x-ray remained orientation only |
 
@@ -40,15 +42,15 @@ Final and verified outputs take precedence over raw agent notes. A source-traced
 
 ## Executive Summary
 
-No Critical or High finding was reported by the committed tool runs.
+No Critical finding was reported. Open-kritt internally ranked its stale-loss first-redeemer issue High; the other source runs reported no High. After cross-source severity reconciliation, that issue remains DF-01 at Medium because a privileged unwind must first create the stale-liquidity window, even though the subsequent loss-shifting redemption is permissionless.
 
-Counts and table severities use the highest reconciled severity applicable to either reviewed snapshot. Version-specific downgrades and fixes are stated in each finding.
+Counts and table severities use the highest reconciled severity applicable to any reviewed snapshot. Version-specific downgrades and fixes are stated in each finding.
 
 The synthesis yields:
 
 - 4 confirmed Medium findings
 - 3 deployment- or configuration-conditional Medium findings, including one mechanism now confirmed by an executable deterministic model
-- 12 Low findings or operational weaknesses
+- 13 Low findings or operational weaknesses
 - 2 conditional trust-boundary or informational findings
 
 The Plamen Core delta does not add a nineteenth family. Six of its eight body mechanisms remain present at `4580174c...`; its Strategy4626 emergency-exit item is the baseline-only DF-07 defect fixed by that later snapshot, and its contested zero-minimum emergency-swap item describes the baseline side of the slippage trade-off later represented by DF-14. Plamen's appendix-only profit-unlock observation failed its attempted PoC and adds no proof beyond DF-04's existing production-fork evidence.
@@ -61,29 +63,46 @@ The strategy-review-agent benchmark also adds no new canonical family or count c
 
 The extended adversarial test suite likewise adds no new canonical family or count change. Its strongest delta is an executable deterministic model PoC for DF-19: a 1% report buffer on a fully utilized 10 WETH cap reopened 0.1 WETH of capacity, accepted that deposit, and caused the next report to record a 0.101 WETH accounting loss shared across the existing and new users. The campaign also strengthens DF-01, DF-02, DF-03, DF-05, DF-06, DF-10, DF-16, and DF-17 with exact regression, fuzz, and stateful evidence. Wrong-asset deployment, factory zero-role configuration, arbitrary-token recovery, and direct-Lido underdelivery remain configuration-hardening or external-assumption notes rather than new canonical vulnerabilities.
 
-| ID | Severity | Status | Applicability | Canonical finding |
-| --- | --- | --- | --- | --- |
-| DF-01 | Medium | Confirmed | Both snapshots | Loss-producing unwinds expose WETH before share accounting records the loss |
-| DF-02 | Medium | Confirmed | Both snapshots | Report and tend can re-stake shutdown liquidity or bypass the staking disable state |
-| DF-03 | Medium | Confirmed | Both snapshots | Strategy4626 deposits its full loose wstETH balance without enforcing live vault capacity |
-| DF-04 | Medium | Confirmed, conditional | Both snapshots | Zero profit locking allows pre-report deposits to capture accrued yield |
-| DF-05 | Low | Confirmed | Both snapshots | Pending Lido redemptions are omitted from deposit-limit accounting |
-| DF-06 | Low | Confirmed | Both snapshots | Lido withdrawal initiation and claim use incompatible ABI shapes |
-| DF-07 | Low | Confirmed operational weakness | Baseline only; fixed at `4580174c...` | Strategy4626 emergency withdrawal does not unwind its normal vault-held position |
-| DF-08 | Low | Confirmed configuration footgun | Baseline only; fixed at `4580174c...` | `reportBuffer > MAX_BPS` underflows valuation and report paths |
-| DF-09 | Low | Deployment-conditional | Both snapshots | StrategyAprOracle returns a constant APR independent of strategy state and debt delta |
-| DF-10 | Conditional | Trust boundary | Both snapshots | Strategy4626 fully trusts the selected ERC4626 vault without local output or NAV guards |
-| DF-11 | Informational | Operational | Both snapshots | Permissionless factory deployment can populate one-shot registry state for unreviewed vaults |
-| DF-12 | Medium | Confirmed | Both snapshots | A small accepted deposit can redeploy WETH prepared for existing-holder withdrawals |
-| DF-13 | Medium | Confirmed, conditional | Both snapshots with a fee-bearing vault | Fee-exclusive nested-vault valuation can overstate realizable assets |
-| DF-14 | Low | Confirmed operational weakness | `4580174c...` snapshot only | The exact-peg emergency minimum can block separated-role recovery |
-| DF-15 | Low | Confirmed configuration footgun | Both snapshots | Restoring the report buffer can mint fee shares without an economic gain |
-| DF-16 | Low | Confirmed, market-conditional | Both snapshots | Queue accounting mixes nominal request value with actual claim proceeds |
-| DF-17 | Low | Confirmed operational weakness | `4580174c...` snapshot only | The Strategy4626 unwind helper is not amount-safe across edge states |
-| DF-18 | Low | Confirmed | Both snapshots | Zero-supply residual assets can be captured by the next depositor |
-| DF-19 | Medium | Executable model PoC, configuration-conditional | Both snapshots | Report-buffer haircuts recursively reopen deposit capacity |
-| DF-20 | Low | Code-trace-only, external-limit-conditional | Both snapshots | Lido withdrawal requests are not bounded or split to the queue's accepted range |
-| DF-21 | Low | Code-trace-only, external-state-conditional | Both snapshots | Advertised capacity ignores Lido's live direct-staking limit |
+The open-kritt delta adds one canonical family: DF-22 for same-pool spot-quote routing that lets an MEV searcher capture the strategy's expected above-par Curve surplus while the transaction remains protected only at nominal one-to-one output. The scan's other 13 canonical issues map to DF-01, DF-02, DF-03, DF-10, DF-12, DF-14, DF-15, and DF-16 or remain explicit privileged-role or upstream-dependency notes below. Open-kritt also provides useful exploit sequencing and quantitative examples for those existing families.
+
+The `24af17e...` snapshot closes three earlier mechanisms: it includes `pendingRedemptions` in reported asset and deposit-cap accounting (DF-05), returns scalar queue claim data (DF-06), and fixes the mixed-position and zero-amount-call branches of DF-17. The excess loose-wstETH unwrap branch of DF-17 remains. These fixes do not alter the new DF-22 route-selection root, which is identical across all three snapshots.
+
+### Manual review context
+
+The `Manual review` labels below record the strategy team's interactive adjudication through 2026-07-19. They are deliberately separate from the source-run severity and status so the original evidence and provenance remain intact. These dispositions assume the intended deployment described during review:
+
+- the strategy is a child of a multi-strategy vault and is kept outside its normal debt-allocation and withdrawal queues;
+- debt additions, reductions, and reallocations are deliberate management or keeper operations;
+- the downstream ERC4626 is a vetted, fee-free Yearn strategy or an equivalently reviewed implementation;
+- Lido's withdrawal queue is the normal exit route, with immediate Curve sales reserved for exceptional conditions; and
+- `reportBuffer` is a conservative reserve for expected exit slippage, not a mechanism for deferring arbitrary profit.
+
+The open-kritt additions were integrated after most of this manual review. DF-22 is therefore unreviewed, and the new open-kritt extensions to DF-12 and DF-15 are called out separately instead of being silently covered by earlier dispositions.
+
+| ID | Severity | Status | Applicability | Manual review | Canonical finding |
+| --- | --- | --- | --- | --- | --- |
+| DF-01 | Medium | Confirmed | All three snapshots | Low; conditional operational sequencing | Loss-producing unwinds expose WETH before share accounting records the loss |
+| DF-02 | Medium | Confirmed | All three snapshots | Accepted; Medium | Report and tend can re-stake shutdown liquidity or bypass the staking disable state |
+| DF-03 | Medium | Confirmed | All three snapshots | Low; recoverable griefing | Strategy4626 deposits its full loose wstETH balance without enforcing live vault capacity |
+| DF-04 | Medium | Confirmed, conditional | All three snapshots | Not yet reviewed | Zero profit locking allows pre-report deposits to capture accrued yield |
+| DF-05 | Low | Confirmed | `521fff28...` and `4580174c...`; fixed at `24af17e...` | Informational under intended deployment; fixed at `24af17e...` | Pending Lido redemptions are omitted from deposit-limit accounting |
+| DF-06 | Low | Confirmed | `521fff28...` and `4580174c...`; fixed at `24af17e...` | Accepted functional bug; severity not finalized | Lido withdrawal initiation and claim use incompatible ABI shapes |
+| DF-07 | Low | Confirmed operational weakness | Baseline only; fixed at `4580174c...` | Resolved at `4580174c...`; baseline-only Low | Strategy4626 emergency withdrawal does not unwind its normal vault-held position |
+| DF-08 | Low | Confirmed configuration footgun | Baseline only; fixed at `4580174c...` | Not yet reviewed | `reportBuffer > MAX_BPS` underflows valuation and report paths |
+| DF-09 | Low | Deployment-conditional | All three snapshots | Informational unless used by production allocation infrastructure | StrategyAprOracle returns a constant APR independent of strategy state and debt delta |
+| DF-10 | Conditional | Trust boundary | All three snapshots | Informational deployment assumption | Strategy4626 fully trusts the selected ERC4626 vault without local output or NAV guards |
+| DF-11 | Informational | Operational | All three snapshots | Informational | Permissionless factory deployment can populate one-shot registry state for unreviewed vaults |
+| DF-12 | Medium | Confirmed | All three snapshots | Non-applicable under stated queue/debt model; new open-kritt trigger unreviewed | A small accepted deposit can redeploy WETH prepared for existing-holder withdrawals |
+| DF-13 | Medium | Confirmed, conditional | All three snapshots with a fee-bearing vault | Informational compatibility requirement | Fee-exclusive nested-vault valuation can overstate realizable assets |
+| DF-14 | Low | Confirmed operational weakness | `4580174c...` and `24af17e...` | Accepted; Low operational weakness | The exact-peg emergency minimum can block separated-role recovery |
+| DF-15 | Low | Confirmed configuration footgun | All three snapshots | Expected behavior for prior buffer premise; new open-kritt extension unreviewed | Report-buffer cycling can mint unearned fee shares or underprice controlled deposits |
+| DF-16 | Low | Confirmed, market-conditional | All three snapshots | Informational tail-risk reconciliation | Queue accounting mixes nominal request value with actual claim proceeds |
+| DF-17 | Low | Confirmed operational weakness | Three variants at `4580174c...`; excess loose-wstETH unwrap remains at `24af17e...` | Low; minor recovery-path edge case | The Strategy4626 unwind helper is not amount-safe across edge states |
+| DF-18 | Low | Confirmed | All three snapshots | Expected/known behavior; not a security finding | Zero-supply residual assets can be captured by the next depositor |
+| DF-19 | Medium | Executable model PoC, configuration-conditional | All three snapshots | Informational cap-semantics note | Report-buffer haircuts recursively reopen deposit capacity |
+| DF-20 | Low | Code-trace-only, external-limit-conditional | All three snapshots | Informational operational hardening | Lido withdrawal requests are not bounded or split to the queue's accepted range |
+| DF-21 | Low | Code-trace-only, external-state-conditional | All three snapshots | Informational operational liveness | Advertised capacity ignores Lido's live direct-staking limit |
+| DF-22 | Low | Code-trace-only, market-conditional | All three snapshots | Not yet reviewed | Same-pool spot routing lets MEV capture above-par Curve execution surplus |
 
 ## Confirmed and Reportable Findings
 
@@ -92,12 +111,15 @@ The extended adversarial test suite likewise adds no new canonical family or cou
 - Severity: Medium
 - Confidence: High
 - Status: Confirmed by executable PoC and independent source trace
+- Manual review: Low. Under the intended queue-first exit policy, this requires an exceptional below-par Curve unwind, immediately exposed WETH, and a missed accounting report before another holder exits. Treat it as an operational sequencing risk rather than a routine Medium path.
 
 `manualSwapToAsset()` and the emergency unwind path can convert stETH-side value into less WETH than the previously recorded nominal value. The resulting WETH immediately increases `availableWithdrawLimit()`, while TokenizedStrategy's stored `totalAssets` and share price remain unchanged until the next report. A user who redeems in that interval receives value using stale pre-loss pricing and shifts a disproportionate share of the loss to remaining shareholders.
 
 The path requires management or emergency-role action to create the WETH and a user withdrawal before the loss-recording report. The privileged first step reduces likelihood but does not remove the permissionless loss-shifting exit once liquid WETH is exposed.
 
 The extended adversarial suite also exercised the two authorized-loss extremes on `4580174c...`. Management can pass `_minOut = 0` to `manualSwapToAsset()` and accept a zero-output conversion, while setting `reportBuffer = MAX_BPS` makes the emergency minimum zero and permits the emergency role to do the same. These variants do not create a separate family because they share DF-01's privileged loss-production root, but they show that the later snapshot's buffer bound still permits the baseline zero-floor condition to be recreated through valid configuration.
+
+Open-kritt makes the cross-holder transfer concrete: if two holders each own 50 shares against 100 WETH of reported assets, a 100-to-95 WETH unwind followed by the first holder redeeming 50 shares pays that holder the stale 50 WETH rather than the fair 47.5 WETH. Only 45 WETH remains for the second holder. The idle balance is sufficient for the first redemption, so inherited withdrawal logic does not call `freeFunds()` or record a withdrawal loss before transferring the overvalued amount.
 
 Affected paths:
 
@@ -114,6 +136,10 @@ Provenance:
 - Plamen Core baseline `M-08` — contested, code-trace-only confirmation that the baseline emergency path supplied zero as Curve's output floor; no forked sandwich or realized loss was executed, so it is retained only as a DF-01 loss/slippage amplifier rather than independent proof
 - Plamen Thorough `M-11` — contested code trace of the adjacent nominal one-to-one LST valuation premise; no live impairment or separate cohort-loss sequence was executed, so it adds context rather than a new family
 - extended adversarial properties `CONV-03` and `CONV-05` — deterministic counterexamples `test_exposes_managementCanAuthorizeUnboundedManualSwapLoss` and `test_exposes_reportBufferCanAuthorizeTotalEmergencyLoss` consumed the entire modeled stETH position for zero WETH under valid role and parameter calls
+- open-kritt scan 3 canonical issue 62 — internally ranked High with exploitability 7.5/10; supplies the deterministic first-redeemer trace and 100-to-95 two-holder example above
+- open-kritt scan 3 canonical issue 43 — Informational trusted-management self-sandwich variant; retained only as a slippage amplifier because management explicitly chooses the manual swap floor
+
+Severity reconciliation: open-kritt ranks the permissionless stale-price redemption High once the window exists. The synthesis retains Medium because creating that window still requires a privileged loss-producing unwind and the user must exit before the next report; the concrete holder-to-holder loss shift remains fully represented.
 
 Recommended remediation:
 
@@ -126,6 +152,7 @@ Recommended remediation:
 - Severity: Medium
 - Confidence: High
 - Status: Confirmed for the shutdown path; flag-only variant has intent ambiguity
+- Manual review: Accepted at Medium. Both report and tend should refuse to re-stake after shutdown, and the same paths should consistently honor `stakeAsset`; otherwise routine keeper activity can undo deliberately freed liquidity.
 
 TokenizedStrategy permits reporting and tending after shutdown. `_harvestAndReport()` and `_tend()` can still call `_stake()` without checking shutdown. As a result, WETH freed for emergency withdrawals can be converted back to stETH or downstream-vault exposure, reducing user `maxRedeem` and undoing incident recovery.
 
@@ -134,6 +161,8 @@ The same call sites also ignore `stakeAsset == false`. Codex Security treated th
 Both 5.6 Sol runs calibrated the shutdown report/tend variants as Low because the trigger is keeper-gated. The synthesis retains Medium as the highest applicable severity because the baseline PoCs demonstrate that the action can reverse emergency recovery and remove immediately withdrawable liquidity.
 
 The strategy-review-agent blind benchmark rated the same root High after reproducing both report and direct-tend redeployment following shutdown. Its Strategy4626-specific tend regression additionally set `stakeAsset = false` and `depositLimit = 0`, proving that those configuration stops and the tend-trigger fix do not constrain a direct keeper call. The synthesis retains Medium after reconciliation because the harmful call remains keeper-gated and the new test sharpens, but does not expand, the already demonstrated blast radius.
+
+Open-kritt adds two reachability details. Direct `tend()` does not enforce `_tendTrigger()`, so the keeper can consume the full idle balance in one call. The report path's `availableDepositLimit(address(this))` check is strategy-local and the strategy self-address is allowed, so it does not inherit the shutdown-aware public-deposit gate.
 
 Affected paths:
 
@@ -156,6 +185,8 @@ Provenance:
 - Plamen Thorough `M-06` — final code trace of the same staking-disable and capacity bypass; its Foundry invariant campaign separately minimized a one-call `stakeAsset=false` counterexample without promoting it to end-to-end harm proof
 - strategy-review-agent blind `F-01` plus comment-aware replay — source-rated High; fixed-block PoCs independently confirmed report redeployment and direct tend after shutdown, including the `stakeAsset=false` and `depositLimit=0` bypass. Issue #714 and #765 context confirms report restaking was intentional, while the claimed tend mitigation changed only trigger signaling.
 - extended adversarial properties `DEPLOY-02` through `DEPLOY-05` — deterministic regressions covered report and direct-tend bypass of `stakeAsset`, direct tend with zero configured capacity, direct-tend failure while Lido is paused, and post-shutdown redeployment into both direct stETH and nested-vault exposure; the shutdown and flag variants map here, while the pause-only behavior remains a liveness extension
+- open-kritt scan 3 canonical issue 69 — Medium; post-shutdown direct-`tend()` variant, including the unenforced trigger and full-balance redeployment
+- open-kritt scan 3 canonical issue 63 — Medium; post-shutdown report variant, including the self-address limit bypass
 
 Recommended remediation:
 
@@ -168,10 +199,13 @@ Recommended remediation:
 - Severity: Medium
 - Confidence: High for the donation path; Medium for capacity variants
 - Status: Confirmed by disposable PoC and independent trace
+- Manual review: Low. A wstETH donation can temporarily grief report or deployment at a full downstream vault, but management can call the Strategy4626 swap path to free WETH and then reduce or reallocate parent-vault debt; a separate manual unwrap is not required. The caller cannot steal value, and recovery is operationally available.
 
 `Strategy4626._stake()` wraps loose stETH and then deposits the strategy's entire loose wstETH balance into the downstream ERC4626 vault. `availableDepositLimit()` checks `vault.maxDeposit(address(this))` only when calculating new WETH intake; the actual `vault.deposit()` sink is not capped by the vault's current remaining capacity.
 
 An unauthenticated account can donate wstETH to the strategy. If the downstream vault has little or no capacity, a later report, tend, user deposit deployment, or manual stake attempts to deposit the donated balance and reverts. Related variants arise when pre-existing loose WETH is swept with a new deposit or a favorable Curve fill produces more wstETH than the precomputed limit anticipated.
+
+Open-kritt further narrows the public griefing case to an integrator using the advertised maximum. `availableDepositLimit()` can expose the downstream vault's full converted `maxDeposit`, while `_stake()` later adds every pre-existing loose stETH and wstETH unit to that amount. A dust wstETH donation larger than conversion-rounding slack can therefore make an otherwise valid max-sized deposit revert until a smaller deployment consumes the loose balance.
 
 The 5.6 Sol runs calibrated these availability paths as Low, while the baseline Codex Security and solidity-auditor runs rated the permissionless donation path Medium. The table retains Medium as the highest applicable rating and records the 5.6 Sol calibration here.
 
@@ -195,6 +229,7 @@ Provenance:
 - ZeroSkills `ZS-04` — Low; a pinned-fork disposable regression removed nested-vault capacity, donated one wei of wstETH, and reproduced `ERC4626: deposit more than max` on the next report
 - Plamen Thorough `M-04` and `L-08` — split the same root into terminal sink enforcement and advertised-capacity accounting; a local invariant minimized the zero-capacity-plus-one-wei branch, while the final findings remained `CODE-TRACE`
 - extended adversarial property `V4626-03` — `test_exposes_looseWstethMakesAdvertisedDepositUnexecutable` advertised 5 WETH of room while 1 WETH of loose wstETH already consumed the downstream vault's remaining capacity, then reproduced an atomic deposit revert
+- open-kritt scan 3 canonical issue 45 — Low, exploitability 8/10; max-sized-deposit griefing via unsolicited wstETH omitted from the advertised limit
 
 Recommended remediation:
 
@@ -207,6 +242,7 @@ Recommended remediation:
 - Severity: Medium when deposits are open and unreported gains are material
 - Confidence: High on mechanics; Medium on deployment likelihood
 - Status: Confirmed mechanism with deployment conditions
+- Manual review: Not yet reviewed.
 
 `Strategy4626Factory.newStrategy4626()` sets `profitMaxUnlockTime` to zero. Deposits mint shares against the last reported accounting value. A depositor who enters immediately before a predictable positive report receives shares before accrued stETH or vault yield is recognized, then participates in the entire immediate PPS increase. Existing holders are diluted by yield that accrued before the new deposit.
 
@@ -239,10 +275,13 @@ Recommended remediation:
 - Severity: Low
 - Confidence: High
 - Status: Confirmed by both 5.6 Sol runs against `4580174c...`, including a temporary lifecycle check
+- Manual review: Informational under the intended deployment. New debt is allocated manually and the strategy is outside automatic allocation queues, so management would have to add debt during a known pending redemption. Automatically returning zero deposit capacity while pending is still sensible hardening. The exact omission is fixed at `24af17e...`.
 
 `estimatedTotalAssets()` counts loose WETH and directly held LST value but not `pendingRedemptions`. Initiating a Lido withdrawal transfers stETH out and increments the scalar pending amount. Until the request is claimed, the strategy can appear to have unused capacity even though the queued value remains economically attributable to it. New deposits can fill that temporary apparent headroom and cause total exposure to exceed the configured `depositLimit` after the queued withdrawal is claimed.
 
 The strategy-review-agent blind benchmark rated this Medium after demonstrating a full-cap position, queue transfer, reopened capacity, refill, and held-plus-pending exposure above the cap. The synthesis retains Low because initiating and repeating the queue transition requires management and the control is a risk/TVL cap rather than share-price accounting; the stronger source rating is retained as a severity disagreement.
+
+Version note: `24af17e...` changes `estimatedTotalAssets()` to include `pendingRedemptions` with the LST-side value, closing this exact omission. Nonzero `reportBuffer` values can still discount cap-side exposure and are tracked separately as DF-19.
 
 Provenance:
 
@@ -265,8 +304,11 @@ Recommended remediation:
 - Severity: Low
 - Confidence: High
 - Status: Confirmed by PoC and multiple independent traces
+- Manual review: Accepted functional bug; final severity was not settled. The initiation bytes should naturally round-trip into claim, so encoding `requestIds[0]` is the appropriate single-request fix. The defect breaks the basic keeper handoff but has an explicit test workaround and privileged recovery. It is fixed at `24af17e...`.
 
 The initiation path returns `abi.encode(uint256[] requestIds)`, while the claim path decodes the supplied bytes as a scalar `uint256`. Passing the initiation bytes directly to claim decodes the dynamic-array offset `0x20` as request id `32`. The current tests and a knowledgeable keeper can work around the mismatch by decoding the array and re-encoding its first element, but the natural bytes handoff is not round-trippable. A failed handoff leaves `pendingRedemptions` nonzero and blocks reports until corrected.
+
+Version note: `24af17e...` returns `abi.encode(requestIds[0])`, matching the scalar claim decoder and fixing this exact round-trip defect.
 
 Provenance:
 
@@ -294,6 +336,7 @@ Recommended remediation:
 - Severity: Low
 - Confidence: High on mechanics
 - Status: Confirmed operational weakness; downgraded because manual recovery exists
+- Manual review: Resolved at `4580174c...`; retain only as a baseline-only Low note. The newer Strategy4626 override reaches the vault-held position, while its replacement-helper edge cases are tracked separately in DF-17.
 
 The inherited emergency withdrawal path only checks directly held stETH. A normal Strategy4626 position is primarily held as downstream ERC4626 shares or loose wstETH, so the standard callback can complete without materially freeing the deployed position. Emergency-authorized operators can still call `manualRedeem()` and `manualUnwrap()` before swapping, making this a multi-step runbook hazard rather than an unrecoverable fund lock.
 
@@ -317,6 +360,7 @@ Recommended remediation:
 - Severity: Low
 - Confidence: High
 - Status: Confirmed management configuration footgun
+- Manual review: Not yet reviewed.
 
 `setReportBuffer()` accepts any `uint256`, but `estimatedTotalAssets()` calculates `MAX_BPS - reportBuffer`. Values above 10,000 revert under Solidity checked arithmetic and can break valuation, deposit-limit, and report calls until management corrects the setting.
 
@@ -337,6 +381,7 @@ Recommended remediation:
 - Severity: Low if deployed in allocation infrastructure; otherwise Informational
 - Confidence: High on implementation, Medium-Low on integration impact
 - Status: Deployment-conditional
+- Manual review: Informational unless this example oracle is actually registered in production allocation infrastructure. The implementation is hard-coded at 4%, but the external periphery registry can replace the oracle used for a strategy.
 
 `aprAfterDebtChange(address,int256)` ignores both inputs and always returns `4e16`. If used by production allocation tooling, it can advertise a positive 4% APR for shutdown, capacity-constrained, or unsupported strategies and for arbitrary debt deltas. No in-repo value-moving consumer or confirmed production registration was identified.
 
@@ -361,10 +406,13 @@ Recommended remediation:
 - Severity: Conditional; Medium for arbitrary or manipulable vaults, Low/Informational for vetted vaults
 - Confidence: Medium-Low
 - Status: Trust boundary, not proven against a configured production vault
+- Manual review: Informational deployment assumption. Intended downstream integrations are vetted Yearn strategies or equivalently reviewed ERC4626 vaults; factory deployment alone neither endorses nor funds an arbitrary vault.
 
 Strategy4626 verifies that the downstream vault's asset is wstETH but otherwise trusts `deposit`, `convertToAssets`, `previewWithdraw`, `maxRedeem`, and `redeem`. The deposit path ignores returned shares and has no local minimum-share check. A malicious or non-standard selected vault could donate principal, distort reported NAV, or block exits.
 
 The extended campaign adds a standards-compatible donation/virtual-share variant rather than relying only on a deliberately hostile vault. After a direct donation inflated the downstream vault's assets-per-share, a report redeposited loose wstETH and reduced the strategy's recoverable value by exactly 32,687,008,448 wei in the minimized fixture. This proves local value drift from an ordinary ERC-4626 rounding mechanism, but it does not establish the same parameters against the configured production vault or show an economically profitable attack. Separate zero-share-mint and short-return mocks deliberately violate normal vault behavior and remain trust-boundary stress tests.
+
+Open-kritt adds an execution-side variant for the configured Yearn-style vault. `manualRedeem()` invokes the three-argument ERC-4626 redemption path, whose pinned TokenizedStrategy implementation defaults to 100% maximum loss, and ignores the returned asset amount. An emergency-authorized caller can therefore burn vault shares during a loss-producing downstream unwind without a local minimum-assets check. Because this requires management or emergency-admin authority plus an adverse external-vault state, it remains an Informational extension of the selected-vault trust boundary rather than a separate family.
 
 Provenance:
 
@@ -374,6 +422,7 @@ Provenance:
 - Plamen Core baseline `M-01` — local malicious-vault unit PoC demonstrated unlimited wstETH allowance use and attacker-controlled `convertToAssets()` valuation after permissionless factory deployment; impact still requires funds to reach that attacker-selected strategy
 - Plamen Thorough `M-15` and `M-17` — final code traces split the same trust boundary into ignored deposit output and arbitrary-vault deployment variants; neither executed a new funded-vault exploit
 - extended adversarial properties `V4626-02`, `V4626-07`, and `V4626-09` — executable zero-share, short-return, and standards-compatible donation/virtual-share counterexamples; only `V4626-09` avoids deliberately noncompliant vault behavior, and none establishes the configured production vault's susceptibility or attacker profitability
+- open-kritt scan 3 canonical issue 55 — Informational; `manualRedeem()` accepts the downstream vault's default maximum loss and does not validate returned assets
 
 Recommended remediation:
 
@@ -385,6 +434,7 @@ Recommended remediation:
 - Severity: Informational
 - Confidence: High on behavior, Low on security impact
 - Status: Operational and indexing risk
+- Manual review: Informational. A permissionless caller can consume the one-shot registry slot but receives no roles, custody, or shares. The factory remains initial management and assigns the configured management address as pending management, so the caller cannot steal the strategy management intended to use.
 
 Anyone can call `newStrategy4626()` for a vault whose asset is wstETH. The caller does not gain strategy privileges, and management must still accept the strategy, but the factory immediately records a single deployment using the current role defaults. Later changes to those factory defaults do not rotate roles on existing strategies. Off-chain consumers must not interpret the factory mapping or event as management endorsement of the underlying vault, and operators must treat deployed role assignments as independent lifecycle state.
 
@@ -407,16 +457,20 @@ Recommended remediation:
 - Severity: Medium
 - Confidence: High
 - Status: Confirmed with an ordinary-depositor trigger and focused fork test
+- Manual review: Non-applicable under the stated operating model because the strategy is outside automatic debt and withdrawal queues and debt increases are deliberate management actions. The later open-kritt allowed-receiver trigger was added after this adjudication and remains to be reviewed separately.
 
 The inherited deposit path calls the strategy deployment hook with the full post-transfer WETH balance, not only the assets received from the current depositor. `_deployFunds()` forwards that aggregate balance to `_stake()` when staking is enabled. A small open-mode or allowlisted deposit can therefore re-stake a much larger WETH balance that management or a keeper had left liquid for existing-holder withdrawals.
 
-This differs from DF-02 because no post-shutdown keeper action is required. It also differs from DF-03 because the primary impact is consumption of reserved withdrawal liquidity, not downstream-vault capacity failure. The same inherited full-balance callback exists in both reviewed snapshots.
+Authorization is checked against the deposit receiver, not necessarily the payer. Open-kritt therefore notes that closed mode is not a complete defense when an operationally allowed receiver is publicly known: an attacker can donate the negligible minted shares to that receiver while using the deposit to consume the shared WETH buffer. A favorable Curve quote is also unnecessary because the Lido fallback still converts the entire balance to stETH.
+
+This differs from DF-02 because no post-shutdown keeper action is required. It also differs from DF-03 because the primary impact is consumption of reserved withdrawal liquidity, not downstream-vault capacity failure. The same inherited full-balance callback exists in all three reviewed snapshots.
 
 Provenance:
 
 - 5.6 Sol solidity-auditor `VF-01` — Medium at confidence 75; access-control and 256-run withdrawal-limit checks passed
 - 5.6 Sol Codex Security `csf_07fb06eefe8dd302ec047d0d` — Low; focused fork test reproduced a tiny accepted deposit re-staking prepared WETH
 - ZeroSkills `ZS-01` — Medium source finding merged both liquidity-relocking variants; its ordinary-depositor regression showed a 1,001-wei deposit consuming a pre-existing roughly 10 WETH withdrawal buffer
+- open-kritt scan 3 canonical issue 57 — Medium, exploitability 7.5/10; a 0.001 WETH example redeploys a 100 WETH withdrawal buffer and reduces existing-holder `maxRedeem` to zero
 
 Recommended remediation:
 
@@ -428,6 +482,7 @@ Recommended remediation:
 - Severity: Medium when a fee-bearing downstream vault is accepted
 - Confidence: High on mechanics; deployment-conditional
 - Status: Confirmed with a fee-bearing harness; not observed for the configured Yearn vault
+- Manual review: Informational compatibility requirement. ERC4626 conformance alone permits exit fees, but the intended Yearn integrations are fee-free. Keep `convertToAssets()` with an explicit fee-free deployment invariant, or use an adapter/net-redemption valuation if fee-bearing vaults are ever supported; `previewRedeem()` can otherwise introduce dynamic fee and valuation noise.
 
 Strategy4626 values downstream shares using `convertToAssets()` and carries that gross figure into `estimatedTotalAssets()` and report accounting. A standards-compatible vault may charge an exit fee such that realizable redemption proceeds are lower than the ideal conversion value. If such a vault is selected and funded, the strategy can commit overstated shareholder value and only recognize the shortfall during redemption, deferring or shifting the loss.
 
@@ -450,12 +505,15 @@ Recommended remediation:
 - Severity: Low
 - Confidence: High
 - Status: Confirmed on the `4580174c...` snapshot reviewed by the 5.6 Sol runs
+- Manual review: Accepted as a Low separated-role recovery weakness. Prefer a dedicated, bounded `emergencySlippageBps` controlled by `onlyEmergencyAuthorized` instead of reusing `reportBuffer`, so an emergency admin can relax an otherwise impossible exit without changing accounting policy.
 
 Compared with the baseline snapshot, `4580174c...` uses a minimum derived from `reportBuffer` in `_emergencyWithdraw()`. Because the buffer defaults to zero, the emergency swap initially requires nominal one-for-one stETH output. When Curve quotes below par, a distinct emergency administrator can enter the recovery path but cannot relax the management-only buffer, so recovery reverts until management cooperates or market conditions improve.
 
 The same shared parameter has the opposite unsafe extreme: the extended suite set `reportBuffer` to the permitted maximum and executed a zero-output emergency conversion. The default-zero liveness failure remains the canonical DF-14 issue, while the maximum-buffer loss case maps to DF-01 and reinforces the recommendation to separate accounting conservatism from a tightly bounded emergency-slippage control.
 
 This mechanism does not apply to the baseline `521fff28...` snapshot, whose emergency swap uses a zero minimum. It is introduced by the `4580174c...` emergency-slippage change.
+
+Open-kritt identifies the opposite configuration boundary on the later snapshots: `reportBuffer == 10_000` makes the computed emergency minimum zero. That path requires management to deliberately select a 100% haircut, and the same role can already call `manualSwapToAsset()` with a near-zero floor, so it is not a distinct attacker capability. It does show that DF-14 is a two-sided policy failure: the shared report buffer ranges from exact-par recovery liveness at zero to no emergency execution protection at its maximum.
 
 Plamen Core baseline `M-08` examined the opposite extreme: the baseline's zero floor. It confirmed that value is forwarded in source but did not execute a forked sandwich or prove searcher profit. The later commit therefore closes the zero-floor condition while introducing the exact-peg recovery-liveness trade-off captured here.
 
@@ -467,6 +525,7 @@ Provenance:
 - human-pages-sol `HP-V2` — conditional Medium at the source level; production-fork verification observed a below-par quote, default unwind failure, emergency-role access failures, and management-assisted recovery
 - Plamen Thorough `M-10` — final code trace of the same buffer-derived floor and separated-role recovery dependency; its intended fork execution was blocked, so it adds corroboration rather than new proof
 - strategy-review-agent blind `F-02` plus comment-aware replay — source-rated High; at mainnet block `25533225`, Curve quoted `0.999797856520084312` ETH per stETH and the default-buffer emergency regression reverted. Comment chronology confirms the reviewer-requested slippage fix left a zero default, management-only configuration, and no deployment initialization.
+- open-kritt scan 3 canonical issue 40 — Low privileged configuration variant; a 10,000-basis-point buffer reduces the emergency Curve floor to zero
 
 Severity reconciliation: the strategy-review-agent benchmark rated the separated-role outage High and human-pages-sol rated it Medium under management loss, while the other 5.6 Sol sources retained Low because no attacker is required or profits and a healthy management key or later market recovery restores the path. The synthesis retains Low and records the stronger conditional impact here.
 
@@ -475,23 +534,28 @@ Recommended remediation:
 - Give the emergency path a separately bounded slippage parameter that the emergency role can use within a management-approved ceiling.
 - Set a non-zero safe default during deployment and test below-peg emergency recovery with separated roles.
 
-### DF-15: Restoring the report buffer can mint fee shares without an economic gain
+### DF-15: Report-buffer cycling can mint unearned fee shares or underprice controlled deposits
 
 - Severity: Low
 - Confidence: High
 - Status: Confirmed management configuration footgun
+- Manual review: The previously discussed fee-share premise is expected accounting behavior, not an active security finding. `reportBuffer` deliberately pre-accounts expected exit slippage, and reducing that reserve recognizes the corresponding valuation recovery. The newly added open-kritt controlled-depositor extension post-dates that conclusion and remains unreviewed.
 
 `reportBuffer` directly discounts reported LST value. Raising it records an accounting loss; restoring it later records an apparent profit even when no assets moved. If performance fees are enabled, inherited report accounting can mint fee shares against that synthetic recovery and dilute holders without an economic gain.
 
-The mechanism exists in both snapshots. The bound present at `4580174c...` fixes the out-of-range underflow in DF-08 but still permits management to cycle valid in-range buffer values.
+Open-kritt issue 41 demonstrates a second monetization branch under malicious or compromised management. With 100 WETH-equivalent of unchanged LST and 100 shares, a 9,999-basis-point buffer can report only 0.01 WETH. A controlled 1 WETH deposit then mints roughly 10,000 shares at the artificial low price; resetting the buffer and reporting again assigns almost all restored value to the new shares. The sequence is deterministic, but every decisive action—buffer changes, health-check bypasses, receiver admission, reports, and final unwind—requires the highest-trust management role. The synthesis therefore retains it as a privileged extension of this configuration family rather than adopting open-kritt's standalone Medium rating.
+
+The mechanism exists in all three snapshots. The bound present from `4580174c...` onward fixes the out-of-range underflow in DF-08 but still permits management to cycle valid in-range buffer values.
 
 Provenance:
 
 - 5.6 Sol solidity-auditor `VF-09` — Low; a temporary fork check used a 10% performance fee, moved no assets between reports, and observed fee-recipient shares after restoring the buffer
+- open-kritt scan 3 canonical issue 41 — internally ranked Medium; controlled-depositor extraction through a 9,999-basis-point synthetic loss and later value restoration
 
 Recommended remediation:
 
 - Treat buffer changes as valuation-policy changes that cannot generate fee-bearing profit.
+- Prevent deposits from minting against an administratively changed synthetic valuation until a neutral reconciliation report and delay have completed.
 - Reset or separately account for the synthetic valuation delta when the buffer changes.
 
 ### DF-16: Queue accounting mixes nominal request value with actual claim proceeds
@@ -499,10 +563,13 @@ Recommended remediation:
 - Severity: Low
 - Confidence: High on accounting mechanics; market-conditional on discounted proceeds
 - Status: Confirmed mechanism with conditional production trigger
+- Manual review: Informational tail-risk reconciliation under the intended deployment. A below-par Lido claim is exceptional, the strategy is outside the parent vault's withdrawal queue, and management can clear the nominal residual and report the loss. Consolidate operational handling with the broader pending-redemption state machine rather than treating this as a material standalone issue.
 
 Queue initiation adds nominal requested stETH to `pendingRedemptions`, while claim completion subtracts the actual native-asset payout. If actual proceeds are below nominal, a residual remains and blocks report, but the received WETH is immediately exposed through `availableWithdrawLimit()`. A shareholder can redeem using stale pre-loss share pricing and shift part of the queue haircut to remaining holders.
 
 The same aggregate ledger creates adjacent recovery hazards: management can clear pending state before a later principal recovery, a partial manual claim batch can zero the whole aggregate, and later proceeds can be measured as profit. Those variants require additional role actions or health-check changes and remain conditional extensions of the canonical nominal-versus-actual mismatch.
+
+Open-kritt sharpens both aggregate-clear variants. The Lido queue accepts equal-length empty request and hint arrays, so `manualClaimWithdrawals([], [], true)` can succeed without claiming anything and still zero every live redemption in local accounting. Separately, `clearPendingRedemptions()` can erase a still-owned receivable before a controlled deposit and later reclassify the recovered principal as profit. Both require emergency or management authority and additional reporting steps, so they remain privileged extensions of the same per-request-versus-aggregate accounting root.
 
 Provenance:
 
@@ -515,6 +582,8 @@ Provenance:
 - Plamen Thorough `M-02`, `M-09`, and `M-12`, including the absorbed `M-13` trail — final code traces extend the same root through stale withdrawal pricing, aggregate clearing, and unbound request identifiers; no end-to-end external discounted settlement was executed
 - ZeroSkills `ZS-L1` — Informational/Low conditional lead only; source tracing confirmed the nominal-versus-actual subtraction, but the exact-payout repo mock could not establish a live discounted settlement
 - extended adversarial properties `QUEUE-03`, `QUEUE-04`, and `QUEUE-07` — a fuzzed discounted full claim left only the haircut as stale pending state, while empty and subset batch claims proved that authorized callers can clear aggregate accounting without consuming every live request NFT
+- open-kritt scan 3 canonical issue 50 — Low; an empty accepted claim batch can erase accounting for every live queue request
+- open-kritt scan 3 canonical issue 44 — Informational; explicit management clearing can manufacture a temporary loss and later reclassify the live receivable as profit
 
 Recommended remediation:
 
@@ -526,6 +595,7 @@ Recommended remediation:
 - Severity: Low
 - Confidence: High on source mechanics
 - Status: Confirmed operational weaknesses on the `4580174c...` snapshot reviewed by the 5.6 Sol runs
+- Manual review: Low, minor recovery-path edge cases. Loose stETH is normally created only by manual recovery, partial unwinds, rounding excess, or donations, and another emergency call can recover an under-freed remainder. The minimal mixed-position fix belongs in `_emergencyWithdraw()` by targeting total `valueOfLST()`, while the two-wstETH-wei cushion is a reasonable accommodation for Lido share rounding rather than a separate defect.
 
 The `4580174c...` snapshot includes a Strategy4626 emergency override and `_freeStETH()` helper, fixing DF-07 relative to the baseline. That path has three distinct amount-handling defects:
 
@@ -536,6 +606,8 @@ The `4580174c...` snapshot includes a Strategy4626 emergency override and `_free
 These paths are privileged and recoverable, so they remain Low, but they complicate emergency runbooks and make an amount-scoped helper transform more exposure than requested.
 
 The extended suite sharpened the first case in two ways. A full emergency request left downstream vault shares solely because one extra unit of loose stETH already satisfied the helper's local target, and `manualRedeem(type(uint256).max)` reverted without progress when the vault exposed only partial redemption capacity. Both are additional manifestations of the existing amount-safety and recovery-progress root.
+
+Version note: `24af17e...` changes the emergency target from `valueOfWstETH()` to total `valueOfLST()` and skips `unwrap(0)`, closing the mixed-position under-free and zero-amount-call variants. `_freeStETH()` still unwraps the complete loose wstETH balance once any shortfall exists, so the excess-transformation branch remains reportable at that revision.
 
 Provenance:
 
@@ -558,12 +630,13 @@ Recommended remediation:
 - Severity: Low
 - Confidence: High
 - Status: Confirmed with a production-fork PoC; rare multi-party sequence
+- Manual review: Expected and known zero-supply ERC4626 behavior, not a strategy-specific security finding under the single-parent-vault model. Before reusing a fully deallocated strategy, operations should simply reconcile or sweep any residual value.
 
 TokenizedStrategy converts assets to shares one-for-one when effective supply is zero without checking whether the strategy still controls residual assets. A conservative report can let all existing shares redeem their cached value while a favorable manual unwind leaves additional loose WETH behind. Once supply and cached `totalAssets` both reach zero, the next depositor becomes the sole shareholder; a later report assigns the orphaned WETH to that depositor.
 
 The human-pages-sol verifier created the full sequence without storage mutation: a 5% buffered 100 WETH position was unwound near par, all old shares redeemed, and more than 3 WETH remained at zero supply and zero cached assets. A subsequent 10 WETH depositor captured more than half of that residual after report. The conditional gain is material, but the need for a conservative report, favorable settlement, a complete prior exit, a new deposit, and keeper reporting keeps likelihood Low.
 
-The zero-supply conversion branch comes from the same pinned TokenizedStrategy implementation, and the conservative-report/manual-unwind sequence exists in both reviewed snapshots. The `4580174c...` source changes do not introduce or remove this root.
+The zero-supply conversion branch comes from the same pinned TokenizedStrategy implementation, and the conservative-report/manual-unwind sequence exists in all three reviewed snapshots. The later first-party source changes do not introduce or remove this root.
 
 Affected paths:
 
@@ -588,6 +661,7 @@ Recommended remediation:
 - Severity: Medium when `depositLimit` is intended as a hard gross-exposure cap
 - Confidence: High on arithmetic and deterministic execution; Medium on deployment impact
 - Status: Confirmed by executable model PoC; configuration intent remains conditional
+- Manual review: Informational cap-semantics note. The buffer intentionally lowers conservative NAV, and the resulting gross exposure above the nominal limit matters only if `depositLimit` is meant to be a hard undiscounted exposure cap. Debt allocation is manual and production buffers are expected to remain small.
 
 `estimatedTotalAssets()` discounts LST-side value by `reportBuffer`, and Strategy4626 derives remaining deposit room by subtracting that discounted value from `_depositLimit`. Depositing and staking therefore increases measured exposure by less than the accepted deposit whenever the buffer is nonzero. Repeating the cycle can drive gross economic exposure toward `depositLimit / (1 - reportBuffer)`; at the maximum permitted 100% buffer, the cap no longer constrains LST-side exposure at all.
 
@@ -611,6 +685,7 @@ Recommended remediation:
 - Severity: Low
 - Confidence: High on source mechanics; Low on current external bounds
 - Status: Code-trace-only operational weakness; external-limit applicability unverified
+- Manual review: Informational operational hardening. Lido atomically reverts requests outside its 100-wei to 1,000-stETH per-request range, so funds and `pendingRedemptions` are not stranded. Validate locally for clearer errors or have management submit multiple bounded requests; do not silently clamp after recording the original nominal amount.
 
 The queue path submits the full requested amount as a one-element array without checking the withdrawal queue's live per-request minimum or maximum and without splitting oversized exits. A strategy exit that is otherwise valid locally can therefore revert at the external queue boundary and require management to retry with manually partitioned requests. Funds remain controlled, so the primary impact is exit and reporting liveness rather than loss.
 
@@ -628,6 +703,7 @@ Recommended remediation:
 - Severity: Low
 - Confidence: High on source mechanics; Medium-Low on external-state applicability
 - Status: Code-trace-only operational weakness; external-state applicability unverified
+- Manual review: Informational operational liveness. `getCurrentStakeLimit()` is a better direct-Lido constraint than `isStakingPaused()` because it also captures an exhausted or partially available rate limit. Atomic reverts do not strand funds; a robust implementation should cap the direct-Lido branch at execution time and leave excess WETH idle, while preserving Curve as an alternate route.
 
 The strategy's advertised deposit room considers its local limit and Lido's paused flag but not Lido's live direct-staking capacity. When direct staking is selected and the protocol-level staking limit is exhausted, a deposit can pass the local capacity check and later revert in `submit()`. This is a liveness and integrator-accuracy issue: value is not lost, but advertised capacity can exceed executable capacity until Lido's external state changes or an alternate route becomes viable.
 
@@ -639,6 +715,42 @@ Recommended remediation:
 
 - Incorporate Lido's current direct-staking allowance into advertised capacity when the direct route can be selected.
 - Add an external-limit-exhaustion test and specify whether callers should retry through Curve or wait for capacity restoration.
+
+## Open-kritt Run Addition
+
+### DF-22: Same-pool spot routing lets MEV capture above-par Curve execution surplus
+
+- Severity: Low
+- Confidence: High on source mechanics; Medium on profitable exploitation
+- Status: Source-confirmed, market/MEV-conditional; no sandwich PoC was executed
+- Manual review: Not yet reviewed. DF-22 and its open-kritt evidence were added after the interactive DF-01 through DF-21 walkthrough.
+
+`Strategy._stake()` selects Curve when the pool's same-state `get_dy(ETH, stETH, _amount)` quote exceeds nominal one-to-one, but the ensuing exchange accepts any output down to exactly `_amount`. For a visible deployment, a searcher can front-run in the same ETH-to-stETH direction until the strategy's full-order quote remains only slightly above par. We then still enter the Curve branch, the strategy's order moves the pool, and the searcher can back-run stETH to ETH to capture part of the favorable premium that the strategy would otherwise have received.
+
+The one-to-one minimum is an important bound: this does not let the searcher force the Curve leg to return less nominal stETH than the supplied WETH. Direct impact is foregone above-par execution surplus, not principal loss. Profit additionally requires a sufficiently large visible order, favorable pool imbalance and liquidity, transaction ordering, and enough round-trip spread to cover Curve fees, price impact, gas, and builder payments. The route also falls back to Lido if the front-run pushes the full-order quote to or below `_amount`. These constraints support Low severity.
+
+The route is reachable through authorized `manualStake()`, `report()`, and `tend()` deployments. It can also be reached by an accepted deposit: inherited TokenizedStrategy transfers the new assets and calls `deployFunds()` with the strategy's full post-transfer WETH balance, after which `_deployFunds()` forwards that amount to `_stake()`. A small deposit can therefore expose a much larger predictable Curve order when loose WETH already exists. That DF-12 full-balance behavior amplifies the opportunity but is not required for the quote/floor mismatch.
+
+This is distinct from adjacent families. DF-01 concerns an stETH-to-WETH unwind followed by stale share accounting and an actual cross-holder loss shift. DF-12 concerns which WETH amount a deposit redeploys. DF-14 concerns emergency stETH-to-WETH liveness under a buffer-derived minimum. DF-22 instead concerns how an ordinary WETH-to-stETH deployment is routed and priced, and its attacker captures only the premium above the nominal principal floor.
+
+Affected paths:
+
+- `src/Strategy.sol`: `_stake`, especially the `get_dy(...) > _amount` route check and the `_amount` Curve exchange floor
+- `src/BaseLSTAccumulator.sol`: `_deployFunds`, `_harvestAndReport`, `_tend`, and `manualStake` reachability
+- inherited TokenizedStrategy deposit full-balance callback as an opportunity amplifier shared with DF-12
+
+Provenance:
+
+- open-kritt scan 3 canonical issue 58 — Low, exploitability 7.5/10; identified entry-side Curve sandwich extraction while limiting direct impact to foregone above-par surplus
+
+Validation basis: I statically reviewed `24af17e55cffd4b9f618e0a0e3ed9045afca0272` and compared the relevant source with `521fff28ad978a37115be8995a1d631611fa1d3d` and `4580174c60ccac4658d97b02f0951aec92b218b2`; I did not build, execute, or simulate a Curve sandwich. The route check and one-to-one floor are unchanged across all three snapshots.
+
+Recommended remediation:
+
+- Bind Curve execution to a deadline-bound minimum output or minimum premium committed independently of the same-transaction manipulable quote, while retaining `_amount` as the absolute principal floor.
+- Submit predictable value-sensitive staking transactions through private or MEV-protected order flow, or use Lido unless Curve's premium clears a deliberately chosen safety threshold.
+- Apply DF-12's amount-scoping or idle-reserve fix so a tiny accepted deposit cannot expose ambient WETH as a large victim order.
+- Add a regression scenario that moves the pre-inclusion Curve state from materially above par to barely above par and requires the strategy to reject the degraded premium or use Lido.
 
 ## Source-to-Canonical Mapping
 
@@ -770,6 +882,19 @@ Recommended remediation:
 | 5.6 Sol solidity-auditor `VL-09` | DF-13 | Fee-bearing-vault dependency |
 | 5.6 Sol solidity-auditor `VL-10` | DF-11 | Old role-snapshot deployment variant |
 | 5.6 Sol solidity-auditor `VL-11` | DF-10 / DF-11 | Arbitrary-vault trust and registry variant |
+| open-kritt scan 3 issue 62 | DF-01 | Stale-loss first-redeemer path; source High reconciled to canonical Medium with quantitative two-holder detail retained |
+| open-kritt scan 3 issue 57 | DF-12 | Dust deposit re-stakes the full prepared WETH buffer, including receiver-based closed-mode reachability |
+| open-kritt scan 3 issues 69 and 63 | DF-02 | Post-shutdown tend and report variants; unenforced trigger and self-address limit details retained |
+| open-kritt scan 3 issue 41 | DF-15 | Privileged controlled-deposit branch of synthetic report-buffer loss and recovery |
+| open-kritt scan 3 issue 58 | DF-22 | New entry-side MEV-surplus family; static source validation only |
+| open-kritt scan 3 issue 45 | DF-03 | Unsolicited-wstETH max-sized-deposit griefing variant |
+| open-kritt scan 3 issue 50 | DF-16 | Empty accepted claim batch can zero the aggregate redemption ledger |
+| open-kritt scan 3 issue 40 | DF-14 context | Maximum-buffer zero-floor boundary on the later emergency path |
+| open-kritt scan 3 issue 44 | DF-16 | Privileged clear-live-receivable loss/recovery variant |
+| open-kritt scan 3 issue 55 | DF-10 | Informational downstream maximum-loss redemption guard variant |
+| open-kritt scan 3 issue 43 | DF-01 / DF-14 context | Trusted-management near-zero manual swap floor; no new attacker capability |
+| open-kritt scan 3 issue 54 | Downgraded note | One-step zero-address factory-management self-brick; future deployments only |
+| open-kritt scan 3 issue 66 | Downgraded upstream dependency note | Zero-unlock fee-share formula is in vendored TokenizedStrategy and requires a non-default fee/unlock combination |
 
 Nemesis `FF-*` and `SI-*` identifiers map to `NEM-001` through `NEM-003`; they are internal subpasses and are not counted as independent corroborating tools. X-ray findings and invariants are orientation artifacts and are not used as standalone security findings.
 
@@ -777,7 +902,7 @@ Nemesis `FF-*` and `SI-*` identifiers map to `NEM-001` through `NEM-003`; they a
 
 The following items remain below the reportable threshold unless deployment facts add impact:
 
-- Factory and `setAddresses()` zero-address validation and missing events: management-only configuration hardening. The extended suite proved that an existing manager can set factory management to zero and permanently disable future `setAddresses()` calls. It also showed that zero keeper and emergency-admin defaults leave a new strategy dependent on its pending manager accepting management before ordinary report and emergency operations become available. These are concrete deployment and key-redundancy hazards, but no unauthorized action or funded-production path was demonstrated.
+- Factory and `setAddresses()` zero-address validation and missing events: management-only configuration hardening. The extended suite proved that an existing manager can set factory management to zero and permanently disable future `setAddresses()` calls; open-kritt issue 54 independently confirms that self-brick while noting that existing strategies remain unaffected. The suite also showed that zero keeper and emergency-admin defaults leave a new strategy dependent on its pending manager accepting management before ordinary report and emergency operations become available. These are concrete deployment and key-redundancy hazards, but no unauthorized action or funded-production path was demonstrated.
 - Non-WETH asset construction: `Strategy` and `Strategy4626Factory` accept an arbitrary ERC-20 asset even though staking later calls WETH-specific methods. The extended suite deployed a strategy over mock stETH and reproduced an atomic deposit revert; the user's tokens and shares remained unchanged, and the repository deployment scripts pin canonical mainnet WETH. Retain as constructor hardening unless an alternate deployment path can fund a misconfigured instance.
 - Arbitrary ERC-20 recovery: an unrelated token donated to the strategy remained stuck because production code exposes no generic rescue function. This is an accidental-transfer recovery gap rather than theft of a supported position token; any rescue function must prohibit withdrawal of WETH, stETH, wstETH, downstream-vault shares, and strategy shares.
 - Direct-Lido underdelivery: a fuzz test confirmed that the strategy has no post-`submit()` output floor if an external Lido model mints less stETH than ETH supplied. The mock deliberately permits behavior outside the expected integration invariant, so this remains an external-protocol assumption rather than a current Lido vulnerability.
@@ -787,6 +912,8 @@ The following items remain below the reportable threshold unless deployment fact
 - Plamen Thorough `L-05` missing factory events and `L-06` one-step management transfer remain operational hardening recommendations without a demonstrated unauthorized-action path.
 - `isDeployedStrategy()` reverting on arbitrary non-strategy input: brittle helper with no demonstrated security consumer.
 - `setReferral(0)`, generic ERC777/fee-on-transfer behavior, and generic WETH token quirks: non-applicable to the intended integration.
+- Open-kritt issues 40 and 43 require malicious management to choose a zero or near-zero Curve floor; they are retained as DF-14/DF-01 slippage context because the same role already owns the manual swap bound.
+- Open-kritt issue 66 alleges excess upstream TokenizedStrategy fee-share minting when profit unlocking is zero. The root is outside first-party `src/`, factory deployments set both fee and unlock to zero, and ordinary initialization pairs a nonzero fee with a nonzero unlock; it remains an upstream/configuration note absent a live non-default combination.
 - The baseline run's earlier demotion of excess loose-wstETH unwrapping is superseded for `4580174c...` by the more complete DF-17 amount-safety evidence.
 - Plamen Core baseline appendix `I-01` was capped from Medium to Informational after `POC-FAIL`; it remains subsumed by DF-04 and contributes no additional proof.
 
@@ -806,7 +933,8 @@ The synthesis relies on the run-local evidence sources listed below. The extende
 - ZeroSkills: the clean `4580174c...` worktree built successfully; the full baseline was 45/46 with only the known one-wei deposit-limit assertion; code-sleuth writer suites passed 12/12; symmetry-targeted existing suites passed 16/16; the disposable four-case regression passed 4/4; and the ABI array-as-scalar check returned 32. The temporary regression file was removed and the audit worktree was clean at handoff.
 - strategy-review-agent benchmark: provenance pinned a clean detached worktree to `4580174c...` before source review and preserved the blind report by checksum before opening comments. The committed full suite remained 45/46 with only the known one-wei deposit-limit assertion; six blind PoCs passed 6/6 at block `25533225`; two comment-aware PoCs passed 2/2; and the final combined isolated run passed 8/8. `forge build --sizes` passed with a Strategy4626Factory runtime size of 18,214 bytes. One preliminary public-RPC attempt executed no tests because the endpoint rejected archive storage with HTTP 403; the configured-RPC run succeeded.
 - extended adversarial test suite: `make test-security-model` passed 80 deterministic tests, separated into 53 enforced-property tests and 27 `test_exposes_*` counterexample or external-assumption tests. Fourteen stateful invariants passed at 256 runs and depth 64 and were repeated with seeds `0x1`, `0x2`, and `0x3`. `make coverage-production` reported 205/205 production lines, 50/50 functions, and 34/34 branches. `ETH_RPC_URL=https://ethereum.publicnode.com make test-fork-legacy` passed all 46 pre-existing fork tests. Six independent review passes then rechecked coverage honesty, invariant reachability, queue-NFT accounting, conversion loss controls, ERC-4626 recovery, and role/configuration behavior. No production source file changed.
+- open-kritt scan 3: the completed `gpt-5.6-sol` Codex-harness scan against `24af17e...` produced 46 raw issues and deduplicated them to 14 canonical issues before bounty ranking. This integration re-opened the exact source revision and statically checked DF-22 plus the reported fix deltas; it did not rerun open-kritt or execute a new fork or MEV PoC.
 - 5.6 Sol Codex Security: production contracts built with pinned Vyper 0.3.7; focused offline, fork, and model-based validations are recorded per finding.
 - 5.6 Sol solidity-auditor: nine findings survived validation; temporary queue-cap and buffer-fee checks passed, all five Strategy4626 tests passed at the pinned block, ABI direct-replay checks passed, and fixed-block calls established the quoted vault/wrapper behavior.
 
-Deployment facts should be collected for DF-04, DF-09, DF-10, DF-11, DF-13, DF-16, DF-19, DF-20, and DF-21 so their final severity and applicability can be fixed. The extended campaign reran the test commands recorded above; statements for the other sources remain grounded in their run-local receipts and repo-local reports.
+Deployment facts should be collected for DF-04, DF-09, DF-10, DF-11, DF-13, DF-16, DF-19, DF-20, DF-21, and DF-22 so their final severity and applicability can be fixed. The extended campaign reran the test commands recorded above; the open-kritt integration was statically checked but not rerun, and statements for the other sources remain grounded in their run-local receipts and repo-local reports.
